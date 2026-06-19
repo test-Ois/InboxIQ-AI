@@ -1,0 +1,102 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id             String             @id @default(uuid()) @db.Uuid
+  authProviderId String             @unique @map("auth_provider_id")
+  email          String             @unique
+  name           String
+  createdAt      DateTime           @default(now()) @map("created_at")
+  updatedAt      DateTime           @updatedAt @map("updated_at")
+  accounts       ConnectedAccount[]
+  emails         Email[]
+  auditLogs      AuditLog[]
+
+  @@index([email])
+  @@index([authProviderId])
+  @@map("users")
+}
+
+model ConnectedAccount {
+  id                     String   @id @default(uuid()) @db.Uuid
+  userId                 String   @map("user_id") @db.Uuid
+  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider               String   @default("google")
+  providerEmail          String   @map("provider_email")
+  encryptedAccessToken   String   @map("encrypted_access_token")
+  encryptedRefreshToken  String   @map("encrypted_refresh_token")
+  tokenExpiry            DateTime @map("token_expiry")
+  gmailHistoryId         String?  @map("gmail_history_id")
+  createdAt              DateTime @default(now()) @map("created_at")
+  updatedAt              DateTime @updatedAt @map("updated_at")
+
+  @@unique([userId, providerEmail], name: "unique_user_provider_email")
+  @@index([userId])
+  @@index([providerEmail])
+  @@map("connected_accounts")
+}
+
+model Email {
+  id              String         @id @default(uuid()) @db.Uuid
+  userId          String         @map("user_id") @db.Uuid
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gmailMessageId  String         @map("gmail_message_id")
+  gmailThreadId   String         @map("gmail_thread_id")
+  gmailHistoryId  String?        @map("gmail_history_id")
+  sender          String
+  subject         String
+  snippet         String?
+  labels          String[]
+  receivedAt      DateTime       @map("received_at")
+  syncedAt        DateTime       @default(now()) @map("synced_at")
+  createdAt       DateTime       @default(now()) @map("created_at")
+  analysis        EmailAnalysis?
+
+  @@unique([userId, gmailMessageId], name: "unique_user_gmail_message_id")
+  @@index([userId, receivedAt(sort: Desc)])
+  @@index([gmailThreadId])
+  @@map("emails")
+}
+
+model EmailAnalysis {
+  id              String   @id @default(uuid()) @db.Uuid
+  emailId         String   @unique @map("email_id") @db.Uuid
+  email           Email    @relation(fields: [emailId], references: [id], onDelete: Cascade)
+  category        String
+  priority        String
+  priorityScore   Int      @map("priority_score")
+  actionRequired  Boolean  @map("action_required")
+  deadline        DateTime?
+  summary         String
+  confidenceScore Float    @map("confidence_score")
+  modelName       String   @map("model_name")
+  promptVersion   String   @map("prompt_version")
+  analyzedAt      DateTime @default(now()) @map("analyzed_at")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@index([priority])
+  @@index([category])
+  @@index([deadline])
+  @@map("email_analyses")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String?  @map("user_id") @db.Uuid
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  details   Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([action, createdAt(sort: Desc)])
+  @@map("audit_logs")
+}
