@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
-import { LayoutDashboard, Inbox, Settings, LogOut, Menu, X, Mail } from 'lucide-react';
+import { LayoutDashboard, Inbox, Settings, LogOut, Menu, X, Mail, CheckSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function SidebarLayout({ children }: { children: React.ReactNode }) {
@@ -15,8 +15,10 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
   const navItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Inbox', href: '/inbox', icon: Inbox },
+    { name: 'Tasks', href: '/tasks', icon: CheckSquare },
     { name: 'Settings', href: '/settings', icon: Settings },
   ];
+
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#09090b]">

@@ -5,10 +5,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 
 // Calculate potential env file paths
-const possiblePaths = [
-  path.resolve(process.cwd(), '.env'),
-  path.resolve(process.cwd(), 'backend', '.env'),
-];
+const possiblePaths = [path.resolve(process.cwd(), '.env'), path.resolve(process.cwd(), 'backend', '.env')];
 
 // Find the first path that actually exists
 const envFilePath = possiblePaths.find((p) => fs.existsSync(p)) || possiblePaths[0];

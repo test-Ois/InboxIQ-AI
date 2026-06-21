@@ -24,10 +24,17 @@ export default function DashboardPage() {
     refetchInterval: 15000,
   });
 
+  const { data: taskStats, isLoading: isTaskStatsLoading } = useQuery({
+    queryKey: ['task-stats'],
+    queryFn: apiService.getTaskStats,
+    refetchInterval: 15000,
+  });
+
   const { data: accounts, isLoading: isAccountsLoading } = useQuery({
     queryKey: ['connected-accounts'],
     queryFn: apiService.getConnectedAccounts,
   });
+
 
   // Mutations
   const connectMutation = useMutation({
@@ -95,7 +102,7 @@ export default function DashboardPage() {
     });
   };
 
-  const isLoading = isMetricsLoading || isAccountsLoading || isAiStatsLoading;
+  const isLoading = isMetricsLoading || isAccountsLoading || isAiStatsLoading || isTaskStatsLoading;
 
   return (
     <SidebarLayout>
@@ -203,6 +210,93 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
+
+          {/* Productivity Task Intelligence Section */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-zinc-200">Productivity Task Intelligence</h2>
+              <span className="text-[10px] font-bold bg-indigo-500/15 text-indigo-400 border border-indigo-500/25 px-2 py-0.5 rounded-full uppercase tracking-wider font-sans">Active</span>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
+              {/* My Tasks Widget */}
+              <div className="glass-panel p-5 rounded-2xl border-l-4 border-indigo-500">
+                <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">My Tasks</p>
+                <p className="text-2xl font-bold text-indigo-400 mt-1.5">
+                  {isLoading ? <span className="inline-block w-8 h-6 bg-zinc-800 rounded animate-pulse" /> : taskStats?.widgets?.myTasks || 0}
+                </p>
+              </div>
+
+              {/* Due Today Widget */}
+              <div className="glass-panel p-5 rounded-2xl border-l-4 border-amber-500">
+                <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Due Today</p>
+                <p className="text-2xl font-bold text-amber-400 mt-1.5">
+                  {isLoading ? <span className="inline-block w-8 h-6 bg-zinc-800 rounded animate-pulse" /> : taskStats?.widgets?.dueToday || 0}
+                </p>
+              </div>
+
+              {/* Upcoming Deadlines Widget */}
+              <div className="glass-panel p-5 rounded-2xl border-l-4 border-sky-500">
+                <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Upcoming Deadlines</p>
+                <p className="text-2xl font-bold text-sky-400 mt-1.5">
+                  {isLoading ? <span className="inline-block w-8 h-6 bg-zinc-800 rounded animate-pulse" /> : taskStats?.widgets?.upcomingDeadlines || 0}
+                </p>
+              </div>
+
+              {/* Overdue Tasks Widget */}
+              <div className="glass-panel p-5 rounded-2xl border-l-4 border-red-500">
+                <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Overdue Tasks</p>
+                <p className="text-2xl font-bold text-red-400 mt-1.5">
+                  {isLoading ? <span className="inline-block w-8 h-6 bg-zinc-800 rounded animate-pulse" /> : taskStats?.widgets?.overdueTasks || 0}
+                </p>
+              </div>
+
+              {/* Completed Tasks Widget */}
+              <div className="glass-panel p-5 rounded-2xl border-l-4 border-emerald-500">
+                <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Completed Tasks</p>
+                <p className="text-2xl font-bold text-emerald-400 mt-1.5">
+                  {isLoading ? <span className="inline-block w-8 h-6 bg-zinc-800 rounded animate-pulse" /> : taskStats?.widgets?.completedTasks || 0}
+                </p>
+              </div>
+
+              {/* High Priority Tasks Widget */}
+              <div className="glass-panel p-5 rounded-2xl border-l-4 border-orange-500">
+                <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">High Priority Tasks</p>
+                <p className="text-2xl font-bold text-orange-400 mt-1.5">
+                  {isLoading ? <span className="inline-block w-8 h-6 bg-zinc-800 rounded animate-pulse" /> : taskStats?.widgets?.highPriorityTasks || 0}
+                </p>
+              </div>
+
+              {/* AI Generated Tasks Today Widget */}
+              <div className="glass-panel p-5 rounded-2xl border-l-4 border-violet-500 col-span-1 sm:col-span-2 flex flex-col justify-between">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">AI Generated Tasks Today</p>
+                    <p className="text-2xl font-bold text-violet-400 mt-1.5">
+                      {isLoading ? <span className="inline-block w-8 h-6 bg-zinc-800 rounded animate-pulse" /> : taskStats?.widgets?.aiGeneratedToday || 0}
+                    </p>
+                  </div>
+                  {taskStats && (
+                    <div className="text-right">
+                      <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">Completion Rate</p>
+                      <p className="text-sm font-bold text-zinc-300 mt-1">{taskStats.metrics.completionPercentage}%</p>
+                    </div>
+                  )}
+                </div>
+                {taskStats && (
+                  <div className="mt-3">
+                    <div className="h-1.5 w-full bg-zinc-900 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-violet-500 to-indigo-500 rounded-full transition-all duration-300"
+                        style={{ width: `${taskStats.metrics.completionPercentage}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
 
         {/* Connected Accounts Section */}
         <div className="glass-panel rounded-2xl overflow-hidden border border-zinc-800">

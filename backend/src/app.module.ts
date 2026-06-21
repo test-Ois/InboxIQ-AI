@@ -11,6 +11,7 @@ import { GmailModule } from './modules/gmail/gmail.module';
 import { EmailsModule } from './modules/emails/emails.module';
 import { EmailAnalysisModule } from './modules/email-analysis/email-analysis.module';
 import { HealthModule } from './modules/health/health.module';
+import { TaskIntelligenceModule } from './modules/task-intelligence/task-intelligence.module';
 import { APP_INTERCEPTOR, APP_FILTER } from '@nestjs/core';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
@@ -45,6 +46,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
     EmailsModule,
     EmailAnalysisModule,
     HealthModule,
+    TaskIntelligenceModule,
   ],
   providers: [
     {

@@ -91,6 +91,64 @@ export interface HealthCheckDto {
   };
 }
 
+export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+export type TaskStatus = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
+export type TaskSource = 'EMAIL' | 'MANUAL' | 'AI_GENERATED';
+
+export interface TaskDto {
+  id: string;
+  userId: string;
+  emailId: string | null;
+  title: string;
+  description: string | null;
+  priority: TaskPriority;
+  status: TaskStatus;
+  dueDate: string | null;
+  completedAt: string | null;
+  confidenceScore: number;
+  source: TaskSource;
+  extractionModel: string | null;
+  promptVersion: string | null;
+  createdAt: string;
+  updatedAt: string;
+  email?: {
+    subject: string;
+    sender: string;
+    receivedAt: string;
+  } | null;
+}
+
+export interface TaskStatsDto {
+  metrics: {
+    totalCreated: number;
+    totalCompleted: number;
+    completionPercentage: number;
+    averageCompletionTimeMs: number;
+    overdueCount: number;
+    overdueRate: number;
+    aiGeneratedToday: number;
+  };
+  widgets: {
+    myTasks: number;
+    dueToday: number;
+    upcomingDeadlines: number;
+    overdueTasks: number;
+    completedTasks: number;
+    highPriorityTasks: number;
+    aiGeneratedToday: number;
+  };
+}
+
+export interface TaskListResponse {
+  tasks: TaskDto[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
 export const apiService = {
   getProfile: async (): Promise<any> => {
     return apiClient.get('/auth/profile');
@@ -137,4 +195,42 @@ export const apiService = {
   getHealth: async (): Promise<HealthCheckDto> => {
     return apiClient.get('/health');
   },
+
+  getTasks: async (params: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    status?: TaskStatus;
+    priority?: TaskPriority;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+  }): Promise<TaskListResponse> => {
+    return apiClient.get('/tasks', { params });
+  },
+
+  getTaskById: async (id: string): Promise<TaskDto> => {
+    return apiClient.get(`/tasks/${id}`);
+  },
+
+  updateTask: async (
+    id: string,
+    updates: {
+      title?: string;
+      description?: string;
+      priority?: TaskPriority;
+      status?: TaskStatus;
+      dueDate?: string | null;
+    },
+  ): Promise<TaskDto> => {
+    return apiClient.patch(`/tasks/${id}`, updates);
+  },
+
+  deleteTask: async (id: string): Promise<TaskDto> => {
+    return apiClient.delete(`/tasks/${id}`);
+  },
+
+  getTaskStats: async (): Promise<TaskStatsDto> => {
+    return apiClient.get('/tasks/stats');
+  },
 };
+

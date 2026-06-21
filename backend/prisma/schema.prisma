@@ -17,6 +17,7 @@ model User {
   accounts       ConnectedAccount[]
   emails         Email[]
   auditLogs      AuditLog[]
+  tasks          Task[]
 
   @@index([email])
   @@index([authProviderId])
@@ -57,6 +58,7 @@ model Email {
   syncedAt        DateTime       @default(now()) @map("synced_at")
   createdAt       DateTime       @default(now()) @map("created_at")
   analysis        EmailAnalysis?
+  tasks           Task[]
 
   @@unique([userId, gmailMessageId], name: "unique_user_gmail_message_id")
   @@index([userId, receivedAt(sort: Desc)])
@@ -100,3 +102,52 @@ model AuditLog {
   @@index([action, createdAt(sort: Desc)])
   @@map("audit_logs")
 }
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum TaskSource {
+  EMAIL
+  MANUAL
+  AI_GENERATED
+}
+
+model Task {
+  id              String       @id @default(uuid()) @db.Uuid
+  userId          String       @map("user_id") @db.Uuid
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emailId         String?      @map("email_id") @db.Uuid
+  email           Email?       @relation(fields: [emailId], references: [id], onDelete: Cascade)
+  title           String
+  description     String?
+  priority        TaskPriority @default(MEDIUM)
+  status          TaskStatus   @default(PENDING)
+  dueDate         DateTime?    @map("due_date")
+  completedAt     DateTime?    @map("completed_at")
+  confidenceScore Float        @default(1.0) @map("confidence_score")
+  source          TaskSource   @default(EMAIL)
+  extractionModel String?      @map("extraction_model")
+  promptVersion   String?      @map("prompt_version")
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@index([emailId])
+  @@index([status])
+  @@index([priority])
+  @@index([dueDate])
+  @@index([userId, status])
+  @@index([userId, priority])
+  @@map("tasks")
+}
+
