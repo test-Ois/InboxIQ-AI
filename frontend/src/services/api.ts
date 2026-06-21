@@ -149,6 +149,71 @@ export interface TaskListResponse {
   };
 }
 
+export type FraudRiskLevel = 'SAFE' | 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+export type FraudType =
+  | 'NONE'
+  | 'PHISHING'
+  | 'SPAM'
+  | 'SPOOFING'
+  | 'MALWARE'
+  | 'BEC'
+  | 'SCAM'
+  | 'IMPERSONATION'
+  | 'OTHER';
+
+export interface FraudAnalysisDto {
+  id: string;
+  emailId: string;
+  riskLevel: FraudRiskLevel;
+  fraudType: FraudType;
+  confidenceScore: number;
+  explanation: string;
+  indicators: string[]; // parsed JSON string[]
+  modelName: string;
+  promptVersion: string;
+  analyzedAt: string;
+  createdAt: string;
+  updatedAt: string;
+  email?: {
+    subject: string;
+    sender: string;
+    receivedAt: string;
+    snippet: string;
+  } | null;
+}
+
+export interface SuspiciousDomainDto {
+  domain: string;
+  count: number;
+}
+
+export interface FraudStatsDto {
+  metrics: {
+    totalScanned: number;
+    fraudAlertsCount: number;
+    securityScore: number;
+    safeEmailsCount: number;
+  };
+  widgets: {
+    fraudAlerts: number;
+    highRiskEmails: number;
+    criticalEmails: number;
+    securityScore: number;
+    topSuspiciousDomains: SuspiciousDomainDto[];
+  };
+  breakdown: Record<FraudRiskLevel, number>;
+}
+
+export interface FraudListResponse {
+  analyses: FraudAnalysisDto[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
 export const apiService = {
   getProfile: async (): Promise<any> => {
     return apiClient.get('/auth/profile');
@@ -232,5 +297,24 @@ export const apiService = {
   getTaskStats: async (): Promise<TaskStatsDto> => {
     return apiClient.get('/tasks/stats');
   },
+
+  getFraudAnalyses: async (params: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    riskLevel?: FraudRiskLevel;
+    fraudType?: FraudType;
+  }): Promise<FraudListResponse> => {
+    return apiClient.get('/fraud-analysis', { params });
+  },
+
+  getFraudAnalysisByEmailId: async (emailId: string): Promise<FraudAnalysisDto> => {
+    return apiClient.get(`/fraud-analysis/${emailId}`);
+  },
+
+  getFraudStats: async (): Promise<FraudStatsDto> => {
+    return apiClient.get('/fraud-analysis/stats');
+  },
 };
+
 

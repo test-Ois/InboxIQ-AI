@@ -3,7 +3,8 @@
 import SidebarLayout from '@/components/layout/sidebar-layout';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiService } from '@/services/api';
-import { Mail, RefreshCw, Unlink, Link2, Clock, Inbox, ShieldCheck } from 'lucide-react';
+import { Mail, RefreshCw, Unlink, Link2, Clock, Inbox, ShieldCheck, ShieldAlert, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
 import React, { useState } from 'react';
 
 export default function DashboardPage() {
@@ -33,6 +34,12 @@ export default function DashboardPage() {
   const { data: accounts, isLoading: isAccountsLoading } = useQuery({
     queryKey: ['connected-accounts'],
     queryFn: apiService.getConnectedAccounts,
+  });
+
+  const { data: fraudStats, isLoading: isFraudStatsLoading } = useQuery({
+    queryKey: ['fraud-stats'],
+    queryFn: apiService.getFraudStats,
+    refetchInterval: 15000,
   });
 
 
@@ -102,7 +109,7 @@ export default function DashboardPage() {
     });
   };
 
-  const isLoading = isMetricsLoading || isAccountsLoading || isAiStatsLoading || isTaskStatsLoading;
+  const isLoading = isMetricsLoading || isAccountsLoading || isAiStatsLoading || isTaskStatsLoading || isFraudStatsLoading;
 
   return (
     <SidebarLayout>
@@ -167,6 +174,45 @@ export default function DashboardPage() {
                 </p>
               </div>
             </div>
+          </div>
+
+          {/* Security Integrity Summary Section */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <Link
+              href="/security"
+              className="glass-panel p-6 rounded-2xl flex items-center justify-between border-l-4 border-emerald-500 hover:border-emerald-600 hover:bg-zinc-900/10 transition-all cursor-pointer group"
+            >
+              <div className="flex items-center gap-5">
+                <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-400 group-hover:scale-105 transition-transform">
+                  <ShieldCheck className="w-6 h-6" />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Inbox Security Score</p>
+                  <p className="text-2xl font-bold text-zinc-100 mt-1">
+                    {isLoading ? <span className="inline-block w-8 h-6 bg-zinc-800 rounded animate-pulse" /> : `${fraudStats?.metrics?.securityScore ?? 100}/100`}
+                  </p>
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-zinc-650 group-hover:translate-x-1 transition-transform" />
+            </Link>
+
+            <Link
+              href="/security"
+              className="glass-panel p-6 rounded-2xl flex items-center justify-between border-l-4 border-red-500 hover:border-red-600 hover:bg-zinc-900/10 transition-all cursor-pointer group"
+            >
+              <div className="flex items-center gap-5">
+                <div className="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/25 flex items-center justify-center text-red-400 group-hover:scale-105 transition-transform">
+                  <ShieldAlert className="w-6 h-6" />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Security Fraud Alerts</p>
+                  <p className="text-2xl font-bold text-zinc-100 mt-1">
+                    {isLoading ? <span className="inline-block w-8 h-6 bg-zinc-800 rounded animate-pulse" /> : `${fraudStats?.metrics?.fraudAlertsCount ?? 0} threats`}
+                  </p>
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-zinc-650 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </div>
 
           {/* AI Intelligence Insights Section */}

@@ -59,6 +59,7 @@ model Email {
   createdAt       DateTime       @default(now()) @map("created_at")
   analysis        EmailAnalysis?
   tasks           Task[]
+  fraudAnalysis   FraudAnalysis?
 
   @@unique([userId, gmailMessageId], name: "unique_user_gmail_message_id")
   @@index([userId, receivedAt(sort: Desc)])
@@ -150,4 +151,45 @@ model Task {
   @@index([userId, priority])
   @@map("tasks")
 }
+
+enum FraudRiskLevel {
+  SAFE
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum FraudType {
+  NONE
+  PHISHING
+  SPAM
+  SPOOFING
+  MALWARE
+  BEC
+  SCAM
+  IMPERSONATION
+  OTHER
+}
+
+model FraudAnalysis {
+  id              String         @id @default(uuid()) @db.Uuid
+  emailId         String         @unique @map("email_id") @db.Uuid
+  email           Email          @relation(fields: [emailId], references: [id], onDelete: Cascade)
+  riskLevel       FraudRiskLevel @map("risk_level")
+  fraudType       FraudType      @map("fraud_type")
+  confidenceScore Float          @map("confidence_score")
+  explanation     String
+  indicators      Json
+  modelName       String         @map("model_name")
+  promptVersion   String         @map("prompt_version")
+  analyzedAt      DateTime       @default(now()) @map("analyzed_at")
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime       @updatedAt @map("updated_at")
+
+  @@index([riskLevel])
+  @@index([fraudType])
+  @@map("fraud_analyses")
+}
+
 

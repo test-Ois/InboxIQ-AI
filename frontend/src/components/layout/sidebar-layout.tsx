@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
-import { LayoutDashboard, Inbox, Settings, LogOut, Menu, X, Mail, CheckSquare } from 'lucide-react';
+import { LayoutDashboard, Inbox, Settings, LogOut, Menu, X, Mail, CheckSquare, ShieldAlert } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function SidebarLayout({ children }: { children: React.ReactNode }) {
@@ -16,6 +16,7 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Inbox', href: '/inbox', icon: Inbox },
     { name: 'Tasks', href: '/tasks', icon: CheckSquare },
+    { name: 'Security', href: '/security', icon: ShieldAlert },
     { name: 'Settings', href: '/settings', icon: Settings },
   ];
 
