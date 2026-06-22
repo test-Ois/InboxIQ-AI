@@ -13,6 +13,9 @@ import { EmailAnalysisModule } from './modules/email-analysis/email-analysis.mod
 import { HealthModule } from './modules/health/health.module';
 import { TaskIntelligenceModule } from './modules/task-intelligence/task-intelligence.module';
 import { FraudIntelligenceModule } from './modules/fraud-intelligence/fraud-intelligence.module';
+import { InboxCleanupModule } from './modules/inbox-cleanup/inbox-cleanup.module';
+import { CopilotModule } from './modules/copilot/copilot.module';
+import { CalendarIntelligenceModule } from './modules/calendar-intelligence/calendar-intelligence.module';
 import { APP_INTERCEPTOR, APP_FILTER } from '@nestjs/core';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
@@ -49,6 +52,9 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
     HealthModule,
     TaskIntelligenceModule,
     FraudIntelligenceModule,
+    InboxCleanupModule,
+    CopilotModule,
+    CalendarIntelligenceModule,
   ],
   providers: [
     {

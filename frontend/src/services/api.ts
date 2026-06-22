@@ -214,6 +214,153 @@ export interface FraudListResponse {
   };
 }
 
+export interface RecommendationOutputDto {
+  id: string;
+  title: string;
+  description: string;
+  category: 'IMPORTANT' | 'PROMOTIONAL' | 'NEWSLETTER' | 'SOCIAL' | 'UPDATES' | 'CLUTTER';
+  actionType: 'ARCHIVE' | 'DELETE' | 'REVIEW' | 'PRIORITIZE';
+  priority: 'HIGH' | 'MEDIUM' | 'LOW';
+  confidenceScore: number;
+  estimatedStorageRecoveryMB: number;
+  affectedCount: number;
+}
+
+export interface CleanupAnalysisDto {
+  id: string;
+  userId: string;
+  inboxHealthScore: number;
+  previousHealthScore: number | null;
+  promotionalCount: number;
+  newsletterCount: number;
+  socialCount: number;
+  updatesCount: number;
+  clutterCount: number;
+  estimatedStorageRecoveryMB: number;
+  recommendations: RecommendationOutputDto[];
+  analyzedAt: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CleanupStatsDto {
+  inboxHealthScore: number;
+  previousHealthScore: number | null;
+  promotionalCount: number;
+  newsletterCount: number;
+  socialCount: number;
+  updatesCount: number;
+  clutterCount: number;
+  unreadClutterCount: number;
+  estimatedStorageRecoveryMB: number;
+  recommendationCount: number;
+  analyzedAt: string | null;
+}
+
+export interface CleanupHistoryResponse {
+  analyses: CleanupAnalysisDto[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export type CopilotSuggestionType = 'REPLY' | 'REWRITE' | 'FOLLOWUP' | 'MEETING' | 'SUMMARY' | 'CUSTOM';
+export type CopilotTone = 'PROFESSIONAL' | 'CASUAL' | 'APOLOGETIC' | 'DIRECT' | 'ENTHUSIASTIC';
+
+export interface CopilotSuggestionDto {
+  id: string;
+  userId: string;
+  emailId: string | null;
+  suggestionType: CopilotSuggestionType;
+  tone: CopilotTone | null;
+  inputContext: any;
+  generatedText: string;
+  modelName: string;
+  promptVersion: string;
+  generatedTokens: number | null;
+  estimatedCost: number | null;
+  generationTimeMs: number | null;
+  createdAt: string;
+  updatedAt: string;
+  email: {
+    subject: string;
+    sender: string;
+    receivedAt: string;
+  } | null;
+}
+
+export interface CopilotStatsDto {
+  totalUsageCount: number;
+  suggestionsGenerated: number;
+  mostUsedTone: string;
+  averageGenerationTimeMs: number;
+  averageTokens: number;
+  totalEstimatedCost: number;
+}
+
+export interface CopilotHistoryResponse {
+  history: CopilotSuggestionDto[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export type MeetingType = 'STATUS_UPDATE' | 'INTERVIEW' | 'PROJECT_DISCUSSION' | 'CLIENT_MEETING' | 'FOLLOW_UP' | 'OTHER';
+export type MeetingStatus = 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'TENTATIVE' | 'COMPLETED';
+
+export interface CalendarEventDto {
+  id: string;
+  userId: string;
+  emailId: string | null;
+  googleEventId: string | null;
+  title: string;
+  description: string | null;
+  location: string | null;
+  meetingUrl: string | null;
+  timezone: string;
+  startTime: string;
+  endTime: string;
+  meetingType: MeetingType;
+  status: MeetingStatus;
+  attendees: string[] | null;
+  isConflict: boolean;
+  isSynced: boolean;
+  metadata: any;
+  createdAt: string;
+  updatedAt: string;
+  email?: {
+    subject: string;
+    sender: string;
+    receivedAt: string;
+  } | null;
+}
+
+export interface CalendarEventsResponse {
+  events: CalendarEventDto[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export interface CalendarStatsDto {
+  upcomingMeetings: number;
+  completedMeetings: number;
+  interviewCount: number;
+  conflictCount: number;
+  busyHours: number;
+  availableHours: number;
+  typeDistribution: Record<MeetingType, number>;
+}
+
 export const apiService = {
   getProfile: async (): Promise<any> => {
     return apiClient.get('/auth/profile');
@@ -314,6 +461,128 @@ export const apiService = {
 
   getFraudStats: async (): Promise<FraudStatsDto> => {
     return apiClient.get('/fraud-analysis/stats');
+  },
+
+  getLatestCleanupAnalysis: async (): Promise<CleanupAnalysisDto> => {
+    return apiClient.get('/cleanup/analysis/latest');
+  },
+
+  getCleanupStats: async (): Promise<CleanupStatsDto> => {
+    return apiClient.get('/cleanup/stats');
+  },
+
+  getCleanupRecommendations: async (): Promise<RecommendationOutputDto[]> => {
+    return apiClient.get('/cleanup/recommendations');
+  },
+
+  getCleanupAnalyses: async (params?: {
+    page?: number;
+    limit?: number;
+  }): Promise<CleanupHistoryResponse> => {
+    return apiClient.get('/cleanup/analysis', { params });
+  },
+
+  triggerCleanupSweep: async (): Promise<{ message: string; jobId: string }> => {
+    return apiClient.post('/cleanup/analyze');
+  },
+
+  generateCopilotReply: async (body: {
+    emailId: string;
+    tone: CopilotTone;
+    customInstructions?: string;
+  }): Promise<CopilotSuggestionDto> => {
+    return apiClient.post('/copilot/reply', body);
+  },
+
+  rewriteCopilotDraft: async (body: {
+    text: string;
+    tone?: CopilotTone;
+    customInstructions?: string;
+  }): Promise<CopilotSuggestionDto> => {
+    return apiClient.post('/copilot/rewrite', body);
+  },
+
+  generateCopilotFollowup: async (body: {
+    emailId: string;
+    delayDays?: number;
+  }): Promise<CopilotSuggestionDto> => {
+    return apiClient.post('/copilot/followup', body);
+  },
+
+  generateCopilotMeetingInvite: async (body: {
+    emailId?: string;
+    template: string;
+    agenda: string;
+    durationMinutes?: number;
+    preferredTimes?: string;
+  }): Promise<CopilotSuggestionDto> => {
+    return apiClient.post('/copilot/meeting', body);
+  },
+
+  summarizeCopilotThread: async (body: {
+    emailId: string;
+  }): Promise<CopilotSuggestionDto> => {
+    return apiClient.post('/copilot/summarize-thread', body);
+  },
+
+  regenerateCopilotSuggestion: async (body: {
+    suggestionId: string;
+  }): Promise<CopilotSuggestionDto> => {
+    return apiClient.post('/copilot/regenerate', body);
+  },
+
+  getCopilotHistory: async (params?: {
+    page?: number;
+    limit?: number;
+    type?: CopilotSuggestionType;
+  }): Promise<CopilotHistoryResponse> => {
+    return apiClient.get('/copilot/history', { params });
+  },
+
+  getCopilotStats: async (): Promise<CopilotStatsDto> => {
+    return apiClient.get('/copilot/stats');
+  },
+
+  getCalendarEvents: async (params?: {
+    page?: number;
+    limit?: number;
+    meetingType?: MeetingType;
+    status?: MeetingStatus;
+    startDate?: string;
+    endDate?: string;
+  }): Promise<CalendarEventsResponse> => {
+    return apiClient.get('/calendar/events', { params });
+  },
+
+  getCalendarEventById: async (id: string): Promise<CalendarEventDto> => {
+    return apiClient.get(`/calendar/events/${id}`);
+  },
+
+  syncCalendar: async (accountId: string): Promise<{ success: boolean; pulled: number; pushed: number }> => {
+    return apiClient.post('/calendar/sync', { accountId });
+  },
+
+  checkCalendarConflict: async (body: {
+    startTime: string;
+    endTime: string;
+    eventId?: string;
+  }): Promise<{ hasConflict: boolean; conflictsCount: number; overlappingEvents: any[] }> => {
+    return apiClient.post('/calendar/conflict-check', body);
+  },
+
+  suggestCalendarSlots: async (body: {
+    startDate: string;
+    endDate: string;
+    durationMinutes: number;
+    workHourStart?: number;
+    workHourEnd?: number;
+    timezone?: string;
+  }): Promise<{ availableSlots: { startTime: string; endTime: string; ranking: number }[] }> => {
+    return apiClient.post('/calendar/suggest-slots', body);
+  },
+
+  getCalendarStats: async (): Promise<CalendarStatsDto> => {
+    return apiClient.get('/calendar/stats');
   },
 };
 

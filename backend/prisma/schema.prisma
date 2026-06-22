@@ -8,16 +8,19 @@ generator client {
 }
 
 model User {
-  id             String             @id @default(uuid()) @db.Uuid
-  authProviderId String             @unique @map("auth_provider_id")
-  email          String             @unique
-  name           String
-  createdAt      DateTime           @default(now()) @map("created_at")
-  updatedAt      DateTime           @updatedAt @map("updated_at")
-  accounts       ConnectedAccount[]
-  emails         Email[]
-  auditLogs      AuditLog[]
-  tasks          Task[]
+  id                 String              @id @default(uuid()) @db.Uuid
+  authProviderId     String              @unique @map("auth_provider_id")
+  email              String              @unique
+  name               String
+  createdAt          DateTime            @default(now()) @map("created_at")
+  updatedAt          DateTime            @updatedAt @map("updated_at")
+  accounts           ConnectedAccount[]
+  emails             Email[]
+  auditLogs          AuditLog[]
+  tasks              Task[]
+  cleanupAnalyses    CleanupAnalysis[]
+  copilotSuggestions CopilotSuggestion[]
+  calendarEvents     CalendarEvent[]
 
   @@index([email])
   @@index([authProviderId])
@@ -44,26 +47,31 @@ model ConnectedAccount {
 }
 
 model Email {
-  id              String         @id @default(uuid()) @db.Uuid
-  userId          String         @map("user_id") @db.Uuid
-  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  gmailMessageId  String         @map("gmail_message_id")
-  gmailThreadId   String         @map("gmail_thread_id")
-  gmailHistoryId  String?        @map("gmail_history_id")
-  sender          String
-  subject         String
-  snippet         String?
-  labels          String[]
-  receivedAt      DateTime       @map("received_at")
-  syncedAt        DateTime       @default(now()) @map("synced_at")
-  createdAt       DateTime       @default(now()) @map("created_at")
-  analysis        EmailAnalysis?
-  tasks           Task[]
-  fraudAnalysis   FraudAnalysis?
+  id                 String              @id @default(uuid()) @db.Uuid
+  userId             String              @map("user_id") @db.Uuid
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gmailMessageId     String              @map("gmail_message_id")
+  gmailThreadId      String              @map("gmail_thread_id")
+  gmailHistoryId     String?             @map("gmail_history_id")
+  sender             String
+  subject            String
+  snippet            String?
+  labels             String[]
+  receivedAt         DateTime            @map("received_at")
+  syncedAt           DateTime            @default(now()) @map("synced_at")
+  createdAt          DateTime            @default(now()) @map("created_at")
+  analysis           EmailAnalysis?
+  tasks              Task[]
+  fraudAnalysis      FraudAnalysis?
+  cleanupCategory    CleanupCategory?    @map("cleanup_category")
+  cleanupConfidence  Float?              @map("cleanup_confidence")
+  copilotSuggestions CopilotSuggestion[]
+  calendarEvents     CalendarEvent[]
 
   @@unique([userId, gmailMessageId], name: "unique_user_gmail_message_id")
   @@index([userId, receivedAt(sort: Desc)])
   @@index([gmailThreadId])
+  @@index([userId, cleanupCategory])
   @@map("emails")
 }
 
@@ -190,6 +198,126 @@ model FraudAnalysis {
   @@index([riskLevel])
   @@index([fraudType])
   @@map("fraud_analyses")
+}
+
+enum CleanupCategory {
+  IMPORTANT
+  PROMOTIONAL
+  NEWSLETTER
+  SOCIAL
+  UPDATES
+  CLUTTER
+}
+
+model CleanupAnalysis {
+  id                         String          @id @default(uuid()) @db.Uuid
+  userId                     String          @map("user_id") @db.Uuid
+  user                       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  inboxHealthScore           Int             @map("inbox_health_score")
+  previousHealthScore        Int?            @map("previous_health_score")
+  promotionalCount           Int             @map("promotional_count")
+  newsletterCount            Int             @map("newsletter_count")
+  socialCount                Int             @map("social_count")
+  updatesCount               Int             @map("updates_count")
+  clutterCount               Int             @map("clutter_count")
+  estimatedStorageRecoveryMB Float           @map("estimated_storage_recovery_mb")
+  recommendations            Json
+  analyzedAt                 DateTime        @default(now()) @map("analyzed_at")
+  createdAt                  DateTime        @default(now()) @map("created_at")
+  updatedAt                  DateTime        @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@index([analyzedAt])
+  @@map("cleanup_analyses")
+}
+
+enum CopilotSuggestionType {
+  REPLY
+  REWRITE
+  FOLLOWUP
+  MEETING
+  SUMMARY
+  CUSTOM
+}
+
+enum CopilotTone {
+  PROFESSIONAL
+  CASUAL
+  APOLOGETIC
+  DIRECT
+  ENTHUSIASTIC
+}
+
+model CopilotSuggestion {
+  id               String                @id @default(uuid()) @db.Uuid
+  userId           String                @map("user_id") @db.Uuid
+  user             User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emailId          String?               @map("email_id") @db.Uuid
+  email            Email?                @relation(fields: [emailId], references: [id], onDelete: SetNull)
+  suggestionType   CopilotSuggestionType @map("suggestion_type")
+  tone             CopilotTone?          @map("tone")
+  inputContext     Json                  @map("input_context")
+  generatedText    String                @map("generated_text")
+  modelName        String                @map("model_name")
+  promptVersion    String                @map("prompt_version")
+  generatedTokens  Int?                  @map("generated_tokens")
+  estimatedCost    Float?                @map("estimated_cost")
+  generationTimeMs Int?                  @map("generation_time_ms")
+  createdAt        DateTime              @default(now()) @map("created_at")
+  updatedAt        DateTime              @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@index([emailId])
+  @@index([suggestionType])
+  @@index([createdAt])
+  @@map("copilot_suggestions")
+}
+
+enum MeetingType {
+  STATUS_UPDATE
+  INTERVIEW
+  PROJECT_DISCUSSION
+  CLIENT_MEETING
+  FOLLOW_UP
+  OTHER
+}
+
+enum MeetingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  TENTATIVE
+  COMPLETED
+}
+
+model CalendarEvent {
+  id            String        @id @default(uuid()) @db.Uuid
+  userId        String        @map("user_id") @db.Uuid
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emailId       String?       @map("email_id") @db.Uuid
+  email         Email?        @relation(fields: [emailId], references: [id], onDelete: Cascade)
+  googleEventId String?       @map("google_event_id")
+  title         String
+  description   String?
+  location      String?
+  meetingUrl    String?       @map("meeting_url")
+  timezone      String        @default("UTC")
+  startTime     DateTime      @map("start_time")
+  endTime       DateTime      @map("end_time")
+  meetingType   MeetingType   @map("meeting_type")
+  status        MeetingStatus @default(PENDING)
+  attendees     Json?
+  isConflict    Boolean       @default(false) @map("is_conflict")
+  isSynced      Boolean       @default(false) @map("is_synced")
+  metadata      Json?
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@index([startTime])
+  @@index([meetingType])
+  @@index([googleEventId])
+  @@map("calendar_events")
 }
 
 
