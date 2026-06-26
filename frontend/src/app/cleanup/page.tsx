@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiService, CleanupAnalysisDto, RecommendationOutputDto } from '@/services/api';
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Loader, ButtonLoader, PageLoader } from '@/components/ui';
 import {
   Sparkles,
   RefreshCw,
@@ -114,54 +115,54 @@ export default function CleanupPage() {
   };
 
   const getHealthColor = (score: number) => {
-    if (score >= 80) return 'text-violet-400';
-    if (score >= 50) return 'text-amber-400';
-    return 'text-rose-400';
+    if (score >= 80) return 'text-primary';
+    if (score >= 50) return 'text-coral';
+    return 'text-red-pink';
   };
 
   const getHealthBorderColor = (score: number) => {
-    if (score >= 80) return 'border-violet-500/20';
-    if (score >= 50) return 'border-amber-500/20';
-    return 'border-rose-500/20';
+    if (score >= 80) return 'border-primary/20';
+    if (score >= 50) return 'border-coral/20';
+    return 'border-red-pink/20';
   };
 
   const getHealthGradientId = (score: number) => {
-    if (score >= 80) return 'health-violet';
+    if (score >= 80) return 'health-primary';
     if (score >= 50) return 'health-amber';
     return 'health-rose';
   };
 
   const getHealthGlowColor = (score: number) => {
     if (score >= 80) return 'rgba(124, 58, 237, 0.4)';
-    if (score >= 50) return 'rgba(245, 158, 11, 0.4)';
+    if (score >= 50) return 'rgba(255, 82, 81, 0.4)';
     return 'rgba(244, 63, 94, 0.4)';
   };
 
   const getActionColor = (actionType: string) => {
     switch (actionType) {
       case 'DELETE':
-        return 'text-rose-450 bg-rose-500/10 border-rose-500/20 shadow-[0_0_12px_rgba(244,63,94,0.1)]';
+        return 'text-red-pink bg-red-pink/10 border-red-pink/20 shadow-[0_0_12px_rgba(244,63,94,0.1)]';
       case 'ARCHIVE':
-        return 'text-violet-400 bg-violet-500/10 border-violet-500/20 shadow-[0_0_12px_rgba(124,58,237,0.1)]';
+        return 'text-primary bg-primary/10 border-primary/20 shadow-[0_0_12px_rgba(124,58,237,0.1)]';
       case 'REVIEW':
-        return 'text-amber-400 bg-amber-500/10 border-amber-500/20';
+        return 'text-coral bg-coral/10 border-coral/20';
       case 'PRIORITIZE':
-        return 'text-emerald-450 bg-emerald-500/10 border-emerald-500/20 shadow-[0_0_12px_rgba(16,185,129,0.1)]';
+        return 'text-coral bg-coral/10 border-coral/20 shadow-[0_0_12px_rgba(255,82,81,0.1)]';
       default:
-        return 'text-zinc-400 bg-zinc-550/10 border-zinc-800';
+        return 'text-zinc-400 bg-zinc-500/10 border-zinc-800';
     }
   };
 
   const getActionBorderHighlight = (actionType: string) => {
     switch (actionType) {
       case 'DELETE':
-        return 'border-l-2 border-l-rose-500/40';
+        return 'border-l-2 border-l-red-pink/45';
       case 'ARCHIVE':
-        return 'border-l-2 border-l-violet-500/40';
+        return 'border-l-2 border-l-primary/45';
       case 'REVIEW':
-        return 'border-l-2 border-l-amber-500/40';
+        return 'border-l-2 border-l-coral/45';
       case 'PRIORITIZE':
-        return 'border-l-2 border-l-emerald-500/40';
+        return 'border-l-2 border-l-coral/45';
       default:
         return 'border-l-2 border-l-transparent';
     }
@@ -170,9 +171,9 @@ export default function CleanupPage() {
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'HIGH':
-        return 'text-rose-400 border-rose-500/25 bg-rose-500/5';
+        return 'text-red-pink border-red-pink/25 bg-red-pink/5';
       case 'MEDIUM':
-        return 'text-amber-400 border-amber-500/25 bg-amber-500/5';
+        return 'text-coral border-coral/25 bg-coral/5';
       case 'LOW':
         return 'text-zinc-400 border-zinc-800 bg-zinc-900/40';
       default:
@@ -194,11 +195,11 @@ export default function CleanupPage() {
 
   // Category list mapping helper
   const categoryData = [
-    { name: 'Promotional', count: stats?.promotionalCount ?? 0, color: 'bg-gradient-to-r from-violet-600 to-indigo-500', size: (stats?.promotionalCount ?? 0) * 0.15 },
-    { name: 'Newsletters', count: stats?.newsletterCount ?? 0, color: 'bg-gradient-to-r from-emerald-500 to-teal-400', size: (stats?.newsletterCount ?? 0) * 0.12 },
-    { name: 'Social Alerts', count: stats?.socialCount ?? 0, color: 'bg-gradient-to-r from-fuchsia-500 to-pink-500', size: (stats?.socialCount ?? 0) * 0.08 },
-    { name: 'Updates', count: stats?.updatesCount ?? 0, color: 'bg-gradient-to-r from-blue-500 to-cyan-400', size: (stats?.updatesCount ?? 0) * 0.05 },
-    { name: 'Clutter / Junk', count: stats?.clutterCount ?? 0, color: 'bg-gradient-to-r from-amber-500 to-orange-500', size: (stats?.clutterCount ?? 0) * 0.10 },
+    { name: 'Promotional', count: stats?.promotionalCount ?? 0, color: 'bg-gradient-to-r from-royal-blue to-primary', size: (stats?.promotionalCount ?? 0) * 0.15 },
+    { name: 'Newsletters', count: stats?.newsletterCount ?? 0, color: 'bg-gradient-to-r from-primary to-secondary', size: (stats?.newsletterCount ?? 0) * 0.12 },
+    { name: 'Social Alerts', count: stats?.socialCount ?? 0, color: 'bg-gradient-to-r from-royal-blue to-royal-blue/60', size: (stats?.socialCount ?? 0) * 0.08 },
+    { name: 'Updates', count: stats?.updatesCount ?? 0, color: 'bg-gradient-to-r from-secondary to-coral', size: (stats?.updatesCount ?? 0) * 0.05 },
+    { name: 'Clutter / Junk', count: stats?.clutterCount ?? 0, color: 'bg-gradient-to-r from-coral to-red-pink', size: (stats?.clutterCount ?? 0) * 0.10 },
   ];
 
   const hasLoadedData = stats && stats.analyzedAt;
@@ -237,23 +238,23 @@ export default function CleanupPage() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ type: 'spring', stiffness: 100, damping: 15 }}
-          className="relative p-8 rounded-3xl overflow-hidden glass-panel border border-white/5 bg-gradient-to-br from-[#0c0c20] via-[#050816]/95 to-[#0b1020]"
+          className="relative p-8 rounded-3xl overflow-hidden glass-panel border border-white/5 bg-gradient-to-br from-card/80 via-card/30 to-background"
         >
-          <div className="absolute top-0 right-0 w-96 h-96 bg-violet-600/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-80 h-80 bg-cyan-500/5 rounded-full blur-3xl -ml-16 -mb-16 pointer-events-none" />
+          <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-80 h-80 bg-primary/5 rounded-full blur-3xl -ml-16 -mb-16 pointer-events-none" />
           
-          <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 font-sans">
             <div className="space-y-3">
               <div className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-violet-500 animate-pulse glow-brand" />
-                <span className="text-[10px] font-bold text-violet-400 uppercase tracking-widest bg-violet-500/10 border border-violet-500/20 px-2.5 py-1 rounded-full">
+                <span className="h-2 w-2 rounded-full bg-primary animate-pulse glow-brand" />
+                <span className="text-[10px] font-bold text-primary uppercase tracking-widest bg-primary/10 border border-primary/20 px-2.5 py-1 rounded-full font-mono">
                   Hygiene Scope: Last 90 Days
                 </span>
               </div>
-              <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-white via-zinc-200 to-zinc-400 bg-clip-text text-transparent font-sans">
+              <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-white via-zinc-200 to-zinc-400 bg-clip-text text-transparent">
                 Hygiene & Inbox Cleanup
               </h1>
-              <p className="text-sm text-zinc-400 max-w-2xl font-sans leading-relaxed">
+              <p className="text-sm text-zinc-400 max-w-2xl leading-relaxed">
                 Maintain a clean and high-performance mailbox. Automatically categorize folders, analyze unread metrics, calculate storage recovery targets, and execute smart sweeps.
               </p>
             </div>
@@ -261,53 +262,46 @@ export default function CleanupPage() {
             <button
               onClick={handleManualSweep}
               disabled={isTriggering || triggerMutation.isPending}
-              className="relative inline-flex items-center gap-2.5 px-6 py-3.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-xs font-bold text-white rounded-xl transition-all duration-300 shadow-lg shadow-violet-600/20 hover:shadow-violet-600/35 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer self-start md:self-auto shrink-0 border border-violet-500/30"
+              className="relative inline-flex items-center gap-2.5 px-6 py-3.5 bg-primary hover:bg-primary-hover text-xs font-bold text-white rounded-xl transition-all duration-300 shadow-lg shadow-primary/20 hover:shadow-primary/35 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer self-start md:self-auto shrink-0 border border-primary/30 font-mono min-w-[200px] min-h-[46px]"
             >
-              {isTriggering ? (
-                <>
-                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                  Sweeping Inbox...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-3.5 h-3.5 text-violet-200 animate-pulse" />
-                  Analyze Inbox Hygiene
-                </>
-              )}
+              <ButtonLoader show={isTriggering || triggerMutation.isPending}>
+                <Sparkles className="w-3.5 h-3.5 text-white animate-pulse" />
+                <span>Analyze Inbox Hygiene</span>
+              </ButtonLoader>
             </button>
           </div>
         </motion.div>
 
         {/* Global Loading or Empty States */}
         {isStatsLoading || isLatestLoading ? (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="glass-panel p-8 rounded-3xl border border-white/5 animate-pulse h-64 shimmer-bg" />
-            ))}
-          </div>
+          <PageLoader 
+            text="Syncing hygiene workstation" 
+            subtitle="Retrieving clutter metrics and compiling storage recovery options..." 
+            minHeight="min-h-[400px]"
+          />
         ) : !hasLoadedData && !isTriggering ? (
           /* Empty / Initial State if no analysis exists */
           <motion.div
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.4 }}
-            className="glass-panel p-16 rounded-3xl border border-white/5 text-center flex flex-col items-center justify-center gap-6 relative overflow-hidden"
+            className="glass-panel p-16 rounded-3xl border border-white/5 text-center flex flex-col items-center justify-center gap-6 relative overflow-hidden font-sans"
           >
-            <div className="absolute inset-0 bg-gradient-to-b from-violet-500/5 to-transparent pointer-events-none" />
-            <div className="w-16 h-16 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400 z-10 glow-brand">
+            <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
+            <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary z-10 glow-brand">
               <Inbox className="w-8 h-8 animate-pulse" />
             </div>
             <div className="z-10 space-y-2">
               <h3 className="text-xl font-bold text-zinc-100 tracking-tight">Hygiene Score Awaiting Run</h3>
-              <p className="text-xs text-zinc-400 max-w-md mx-auto leading-relaxed font-sans">
+              <p className="text-xs text-zinc-450 max-w-md mx-auto leading-relaxed">
                 No inbox analysis metrics are available yet. Let our AI evaluate your primary folders (defaulting to the last 90 days) to construct storage recovery indicators and categorizations.
               </p>
             </div>
             <button
               onClick={handleManualSweep}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-xs font-bold text-white rounded-xl shadow-lg shadow-violet-600/20 cursor-pointer z-10 transition-all duration-300 hover:scale-102 border border-violet-500/30"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-hover text-xs font-bold text-white rounded-xl shadow-lg shadow-primary/20 cursor-pointer z-10 transition-all duration-300 hover:scale-102 border border-primary/30 font-mono"
             >
-              <Sparkles className="w-4 h-4 text-violet-200" />
+              <Sparkles className="w-4 h-4 text-white" />
               Generate First Analysis
             </button>
           </motion.div>
@@ -327,27 +321,27 @@ export default function CleanupPage() {
                 variants={itemVariants}
                 className="glass-panel p-6 rounded-3xl border border-white/5 flex flex-col items-center text-center justify-between min-h-[320px] relative overflow-hidden group glass-panel-hover"
               >
-                <div className="absolute inset-0 bg-gradient-to-b from-violet-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                 
                 <div className="w-full flex items-center justify-between text-xs font-bold text-zinc-400 uppercase tracking-wider z-10 font-mono">
                   <span>Inbox Integrity</span>
-                  <CheckCircle className={`w-4 h-4 ${healthScore >= 80 ? 'text-violet-400' : 'text-amber-400'}`} />
+                  <CheckCircle className={`w-4 h-4 ${healthScore >= 80 ? 'text-primary' : 'text-amber-400'}`} />
                 </div>
 
                 <div className="relative flex items-center justify-center my-6 z-10">
                   <svg className="w-40 h-40 transform -rotate-90">
                     <defs>
-                      <linearGradient id="health-violet" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#a855f7" />
-                        <stop offset="100%" stopColor="#6366f1" />
+                      <linearGradient id="health-primary" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#7c3aed" />
+                        <stop offset="100%" stopColor="#4c1d95" />
                       </linearGradient>
                       <linearGradient id="health-amber" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#fbbf24" />
-                        <stop offset="100%" stopColor="#f59e0b" />
+                        <stop offset="0%" stopColor="#ff5251" />
+                        <stop offset="100%" stopColor="#dc2626" />
                       </linearGradient>
                       <linearGradient id="health-rose" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#f87171" />
-                        <stop offset="100%" stopColor="#ef4444" />
+                        <stop offset="0%" stopColor="#f43f5e" />
+                        <stop offset="100%" stopColor="#be123c" />
                       </linearGradient>
                     </defs>
                     <circle
@@ -372,7 +366,7 @@ export default function CleanupPage() {
                   </svg>
                   <div className="absolute flex flex-col items-center">
                     <span className="text-4xl font-black text-white tracking-tight">{healthScore}</span>
-                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mt-1">Health</span>
+                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mt-1 font-mono">Health</span>
                   </div>
                 </div>
 
@@ -387,22 +381,22 @@ export default function CleanupPage() {
                   
                   {previousHealthScore !== null && previousHealthScore !== undefined && (
                     <div className="flex items-center justify-center gap-1.5 text-[10px] text-zinc-500 font-sans mt-0.5">
-                      <span>Previous: {previousHealthScore}</span>
-                      <span>•</span>
-                      <div className="flex items-center gap-0.5 font-bold">
-                        {healthScore - previousHealthScore >= 0 ? (
-                          <>
-                            <TrendingUp className="w-3 h-3 text-emerald-400" />
-                            <span className="text-emerald-400">+{healthScore - previousHealthScore}</span>
-                          </>
-                        ) : (
-                          <>
-                            <TrendingDown className="w-3 h-3 text-rose-450" />
-                            <span className="text-rose-450">{healthScore - previousHealthScore}</span>
-                          </>
-                        )}
-                      </div>
-                    </div>
+                       <span>Previous: {previousHealthScore}</span>
+                       <span>•</span>
+                       <div className="flex items-center gap-0.5 font-bold">
+                         {healthScore - previousHealthScore >= 0 ? (
+                           <>
+                             <TrendingUp className="w-3 h-3 text-royal-blue" />
+                             <span className="text-royal-blue">+{healthScore - previousHealthScore}</span>
+                           </>
+                         ) : (
+                           <>
+                             <TrendingDown className="w-3 h-3 text-red-pink" />
+                             <span className="text-red-pink">{healthScore - previousHealthScore}</span>
+                           </>
+                         )}
+                       </div>
+                     </div>
                   )}
                 </div>
               </motion.div>
@@ -410,18 +404,18 @@ export default function CleanupPage() {
               {/* Storage Recovery Panel */}
               <motion.div
                 variants={itemVariants}
-                className="glass-panel p-6 rounded-3xl border border-white/5 flex flex-col justify-between min-h-[320px] relative overflow-hidden group bg-gradient-to-br from-violet-950/15 via-[#0b1020]/90 to-[#050816] glass-panel-hover"
+                className="glass-panel p-6 rounded-3xl border border-white/5 flex flex-col justify-between min-h-[320px] relative overflow-hidden group bg-gradient-to-br from-card/90 via-card/40 to-background glass-panel-hover"
               >
-                <div className="absolute inset-0 bg-gradient-to-b from-violet-500/5 to-transparent pointer-events-none" />
-                <div className="absolute top-0 right-0 w-48 h-48 bg-violet-500/5 rounded-full blur-3xl pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
+                <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
                 
                 <div className="flex items-center gap-2 text-xs font-bold text-zinc-400 uppercase tracking-wider z-10 font-mono">
-                  <Database className="w-4 h-4 text-violet-400" />
+                  <Database className="w-4 h-4 text-primary" />
                   <span>Recovery Target</span>
                 </div>
 
                 <div className="my-6 z-10 space-y-2">
-                  <p className="text-5xl font-black tracking-tight text-gradient-purple">
+                  <p className="text-5xl font-black tracking-tight text-gradient-blue font-mono">
                     {stats?.estimatedStorageRecoveryMB?.toFixed(1) ?? '0.0'}
                     <span className="text-lg font-extrabold text-zinc-400 ml-1.5 uppercase">MB</span>
                   </p>
@@ -431,8 +425,8 @@ export default function CleanupPage() {
                 </div>
 
                 <div className="p-3.5 bg-zinc-950/60 border border-white/[0.04] rounded-2xl flex items-start gap-2.5 z-10">
-                  <Info className="w-4 h-4 text-violet-400 shrink-0 mt-0.5" />
-                  <p className="text-[10px] text-zinc-550 font-sans leading-normal">
+                  <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                  <p className="text-[10px] text-zinc-500 font-sans leading-normal">
                     Gmail sandbox safeguard: Delete, unsubscribe, and bulk clean features simulate logic execution. Real mailbox data remains fully protected.
                   </p>
                 </div>
@@ -446,29 +440,29 @@ export default function CleanupPage() {
                 <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                 
                 <div className="flex items-center gap-2 text-xs font-bold text-zinc-400 uppercase tracking-wider z-10 font-mono">
-                  <Layers className="w-4 h-4 text-violet-400" />
+                  <Layers className="w-4 h-4 text-primary" />
                   <span>Clutter Summary</span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 my-4 z-10">
-                  <div className="p-4 bg-zinc-950/50 border border-white/[0.03] rounded-2xl">
+                <div className="grid grid-cols-2 gap-4 my-4 z-10 font-mono">
+                  <div className="p-4 bg-zinc-950/50 border border-white/[0.03] rounded-2xl text-left">
                     <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider block">Total Clutter</span>
                     <span className="text-2xl font-black text-zinc-100 mt-1.5 block tracking-tight">{totalClutter} <span className="text-xs font-normal text-zinc-400">items</span></span>
                   </div>
-                  <div className="p-4 bg-zinc-950/50 border border-white/[0.03] rounded-2xl">
+                  <div className="p-4 bg-zinc-950/50 border border-white/[0.03] rounded-2xl text-left">
                     <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider block">Unread Clutter</span>
                     <span className="text-2xl font-black text-amber-400 mt-1.5 block tracking-tight">{stats?.unreadClutterCount ?? 0} <span className="text-xs font-normal text-zinc-500">items</span></span>
                   </div>
                 </div>
 
-                <div className="text-xs text-zinc-400 border-t border-zinc-900/80 pt-3 z-10 flex justify-between items-center font-sans">
+                <div className="text-xs text-zinc-455 border-t border-zinc-900/80 pt-3 z-10 flex justify-between items-center font-sans">
                   <div>
-                    <span className="font-semibold text-zinc-355 block">Assessment Sync</span>
+                    <span className="font-semibold text-zinc-300 block">Assessment Sync</span>
                     <span className="text-[10px] text-zinc-500 block mt-0.5">
                       {stats?.analyzedAt ? new Date(stats.analyzedAt).toLocaleString() : 'Pending Sweep Run'}
                     </span>
                   </div>
-                  <CheckCircle className="w-4 h-4 text-emerald-400" />
+                  <CheckCircle className="w-4 h-4 text-royal-blue" />
                 </div>
               </motion.div>
             </div>
@@ -521,10 +515,10 @@ export default function CleanupPage() {
               >
                 <div>
                   <h3 className="text-sm font-bold text-zinc-200 uppercase tracking-wider flex items-center gap-2 font-mono">
-                    <Sparkles className="w-4 h-4 text-violet-400 animate-pulse" />
+                    <Sparkles className="w-4 h-4 text-primary animate-pulse" />
                     AI Cleanup Recommendations
                   </h3>
-                  <p className="text-xs text-zinc-550 mt-1 font-sans font-medium">Smart cleanup advice compiled by our analysis engines.</p>
+                  <p className="text-xs text-zinc-500 mt-1 font-sans font-medium">Smart cleanup advice compiled by our analysis engines.</p>
                 </div>
 
                 <div className="space-y-4 max-h-[380px] overflow-y-auto pr-1 custom-scrollbar">
@@ -553,13 +547,13 @@ export default function CleanupPage() {
                         {/* Recommendation storage info */}
                         <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center border-t sm:border-t-0 border-zinc-900/50 pt-2.5 sm:pt-0 shrink-0 font-sans">
                           <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest block font-mono">Reclaim Target</span>
-                          <span className="text-base font-black text-violet-400 mt-0.5">{recommendation.estimatedStorageRecoveryMB.toFixed(1)} MB</span>
+                          <span className="text-base font-black text-primary mt-0.5">{recommendation.estimatedStorageRecoveryMB.toFixed(1)} MB</span>
                           <span className="text-[10px] text-zinc-500 mt-0.5">{recommendation.affectedCount} emails</span>
                         </div>
                       </div>
                     ))
                   ) : (
-                    <div className="h-48 border border-dashed border-zinc-800/60 rounded-2xl flex flex-col items-center justify-center gap-2 text-zinc-550 italic text-xs">
+                    <div className="h-48 border border-dashed border-zinc-800/60 rounded-2xl flex flex-col items-center justify-center gap-2 text-zinc-500 italic text-xs">
                       No sweep recommendations available. Execute a hygiene scan.
                     </div>
                   )}
@@ -574,7 +568,7 @@ export default function CleanupPage() {
             >
               <div>
                 <h3 className="text-sm font-bold text-zinc-200 uppercase tracking-wider flex items-center gap-2 font-mono">
-                  <FileText className="w-4 h-4 text-violet-400" />
+                  <FileText className="w-4 h-4 text-primary" />
                   Historical Cleanliness Audits
                 </h3>
                 <p className="text-xs text-zinc-500 mt-1">Audit trail of overall mailbox health levels and estimates over time.</p>
@@ -593,14 +587,17 @@ export default function CleanupPage() {
                   </thead>
                   <tbody className="divide-y divide-zinc-900/60 text-xs">
                     {isHistoryLoading ? (
-                      [1, 2].map((i) => (
-                        <tr key={i} className="animate-pulse">
-                          <td colSpan={5} className="py-5 px-5 h-12 bg-zinc-950/10 shimmer-bg" />
-                        </tr>
-                      ))
+                      <tr>
+                        <td colSpan={5} className="py-8 text-center">
+                          <div className="flex flex-col items-center justify-center gap-2">
+                            <Loader size="md" />
+                            <span className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider animate-pulse">Syncing audit logs...</span>
+                          </div>
+                        </td>
+                      </tr>
                     ) : !historyData?.analyses || historyData.analyses.length === 0 ? (
                       <tr>
-                        <td colSpan={5} className="py-8 px-5 text-center text-zinc-550 italic">
+                        <td colSpan={5} className="py-8 px-5 text-center text-zinc-500 italic">
                           No historical scans registered.
                         </td>
                       </tr>
@@ -615,8 +612,8 @@ export default function CleanupPage() {
                         const recs = Array.isArray(analysis.recommendations) ? analysis.recommendations : [];
 
                         return (
-                          <tr key={analysis.id} className="hover:bg-zinc-900/10 transition-colors">
-                            <td className="py-4 px-5 font-bold text-zinc-350">
+                           <tr key={analysis.id} className="hover:bg-zinc-900/10 transition-colors">
+                            <td className="py-4 px-5 font-bold text-zinc-350 font-mono">
                               {new Date(analysis.analyzedAt).toLocaleString()}
                             </td>
                             <td className="py-4 px-5 font-bold">
@@ -627,10 +624,10 @@ export default function CleanupPage() {
                             <td className="py-4 px-5 text-zinc-400">
                               {total} clutter items ({analysis.promotionalCount} promo, {analysis.newsletterCount} news)
                             </td>
-                            <td className="py-4 px-5 text-violet-400 font-extrabold">
+                            <td className="py-4 px-5 text-primary font-extrabold font-mono">
                               {analysis.estimatedStorageRecoveryMB.toFixed(1)} MB
                             </td>
-                            <td className="py-4 px-5 text-zinc-500">
+                            <td className="py-4 px-5 text-zinc-550">
                               {recs.length} cards recommended
                             </td>
                           </tr>

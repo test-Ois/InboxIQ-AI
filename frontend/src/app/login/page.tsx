@@ -1,9 +1,11 @@
 'use client';
 
 import { signIn } from 'next-auth/react';
-import { Mail, ShieldCheck, Sparkles, Activity, KeyRound, AlertTriangle } from 'lucide-react';
+import { Mail, ArrowLeft, ShieldCheck, Lock, Eye } from 'lucide-react';
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
+import { ButtonLoader } from '@/components/ui';
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
@@ -19,98 +21,182 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-[#050816] text-[#fafafa] overflow-hidden px-4 font-sans">
-      {/* Techy Grid Background */}
-      <div className="absolute inset-0 grid-background grid-mask z-0 opacity-40 pointer-events-none" />
+    <div className="relative min-h-screen flex flex-col items-center justify-center bg-[#050810] text-white overflow-hidden px-4 font-sans antialiased">
 
-      {/* Decorative gradient glow lights */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] md:w-[600px] h-[350px] md:h-[600px] rounded-full bg-violet-900/10 blur-[120px] pointer-events-none z-0" />
-      <div className="absolute top-[20%] right-[20%] w-[250px] md:w-[400px] h-[250px] md:h-[400px] rounded-full bg-cyan-900/5 blur-[100px] pointer-events-none z-0" />
+      {/* ── Ambient glow orbs ─────────────────────────────────────────── */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(109,40,217,0.08) 0%, transparent 70%)' }}
+      />
+      <div className="absolute top-[15%] right-[15%] w-[400px] h-[400px] rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(168,85,247,0.05) 0%, transparent 70%)' }}
+      />
+      <div className="absolute bottom-[15%] left-[15%] w-[350px] h-[350px] rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(circle, rgba(109,40,217,0.04) 0%, transparent 70%)' }}
+      />
 
-      {/* Back to landing page indicator */}
-      <div className="absolute top-6 left-6 z-20">
-        <a 
-          href="/" 
-          className="text-xs font-bold text-zinc-550 hover:text-zinc-300 transition-colors flex items-center gap-1.5 font-mono uppercase tracking-widest"
+      {/* ── Back link ─────────────────────────────────────────────────── */}
+      <div className="absolute top-8 left-8 z-20">
+        <Link
+          href="/"
+          className="flex items-center gap-2 text-[12px] font-semibold text-zinc-400 hover:text-white transition-colors duration-200 group"
         >
-          <span>&larr;</span> Back to Home
-        </a>
+          <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform duration-200" />
+          Back
+        </Link>
       </div>
 
-      {/* Floating Premium glass login card */}
-      <motion.div 
-        initial={{ opacity: 0, y: 30, scale: 0.98 }}
+      {/* ── Login Card ────────────────────────────────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 24, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ type: 'spring', stiffness: 90, damping: 15 }}
-        className="glass-panel w-full max-w-md p-8 md:p-10 rounded-3xl flex flex-col items-center gap-8 relative z-10 shadow-[0_20px_50px_rgba(0,0,0,0.6)]"
+        transition={{ type: 'spring', stiffness: 100, damping: 18 }}
+        className="relative z-10 w-full max-w-[400px] flex flex-col items-center"
       >
-        {/* Top Glow Accent line */}
-        <div className="absolute top-0 left-6 right-6 h-[1px] bg-gradient-to-r from-transparent via-violet-500/30 to-transparent" />
-        
-        {/* Brand logo & pulsing status indicator */}
-        <div className="flex flex-col items-center gap-4 text-center">
+
+        {/* ── Logo block ──────────────────────────────────────────────── */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.1, type: 'spring', stiffness: 120, damping: 14 }}
+          className="mb-8 flex flex-col items-center gap-5"
+        >
+          {/* Icon */}
           <div className="relative">
-            <div className="flex items-center justify-center w-13 h-13 rounded-2xl bg-violet-600 shadow-[0_0_25px_rgba(124,58,237,0.45)] border border-violet-500/20">
-              <Mail className="w-6 h-6 text-white" />
+            <div
+              className="w-[72px] h-[72px] rounded-[22px] flex items-center justify-center shadow-2xl"
+              style={{
+                background: 'linear-gradient(145deg, #7c3aed 0%, #6d28d9 50%, #5b21b6 100%)',
+                boxShadow: '0 20px 60px rgba(109,40,217,0.45), 0 0 0 1px rgba(167,139,250,0.15)',
+              }}
+            >
+              <Mail className="w-8 h-8 text-white" strokeWidth={1.8} />
             </div>
-            {/* Pulsing Status Dot */}
-            <span className="absolute -bottom-1 -right-1 flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+            {/* Live dot */}
+            <span className="absolute -bottom-1 -right-1 flex h-4 w-4">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-50" />
+              <span
+                className="relative inline-flex rounded-full h-4 w-4 border-2 border-[#050810]"
+                style={{ background: 'linear-gradient(135deg, #a78bfa, #6d28d9)' }}
+              />
             </span>
           </div>
 
-          <div className="space-y-1.5 mt-2">
-            <h2 className="text-2xl font-black tracking-tight text-zinc-150 font-sans">Welcome to InboxIQ AI</h2>
-            <p className="text-zinc-450 text-xs font-medium max-w-xs leading-relaxed">
-              Synchronize your workspace using Google OAuth and run background intelligence audits.
+          {/* Wordmark */}
+          <div className="text-center">
+            <p className="text-[13px] font-bold tracking-[0.2em] uppercase text-zinc-400 font-mono mb-1">
+              InboxIQ <span className="text-[#a78bfa]">AI</span>
             </p>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Info badges banner */}
-        <div className="w-full grid grid-cols-2 gap-3 text-[10px] font-mono text-zinc-450">
-          <div className="p-3 rounded-xl border border-white/5 bg-[#050816]/60 flex flex-col gap-1">
-            <span className="text-zinc-550 uppercase font-bold tracking-wider">Sync mode</span>
-            <span className="text-violet-400 font-bold flex items-center gap-1"><Activity className="w-3 h-3 text-violet-400" /> Active BullMQ</span>
-          </div>
-          <div className="p-3 rounded-xl border border-white/5 bg-[#050816]/60 flex flex-col gap-1">
-            <span className="text-zinc-550 uppercase font-bold tracking-wider">Security</span>
-            <span className="text-emerald-400 font-bold flex items-center gap-1"><KeyRound className="w-3 h-3 text-emerald-400" /> AES-256 GCM</span>
-          </div>
-        </div>
+        {/* ── Card surface ────────────────────────────────────────────── */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15, duration: 0.4 }}
+          className="w-full rounded-3xl p-8 flex flex-col items-center gap-7"
+          style={{
+            background: 'linear-gradient(145deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%)',
+            border: '1px solid rgba(255,255,255,0.07)',
+            boxShadow: '0 32px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.06)',
+            backdropFilter: 'blur(24px)',
+          }}
+        >
+          {/* Top accent line */}
+          <div className="absolute top-0 left-12 right-12 h-[1px]"
+            style={{ background: 'linear-gradient(90deg, transparent, rgba(167,139,250,0.4), transparent)' }}
+          />
 
-        {/* OAuth login button container */}
-        <div className="w-full space-y-3">
+          {/* Headline */}
+          <div className="text-center space-y-2.5">
+            <h1 className="text-[26px] font-extrabold tracking-tight text-white leading-tight">
+              Sign in to InboxIQ
+            </h1>
+            <p className="text-[13px] text-zinc-400 leading-relaxed font-medium max-w-[280px] mx-auto">
+              Connect your Google account to unlock AI-powered email intelligence.
+            </p>
+          </div>
+
+          {/* ── Google Button ──────────────────────────────────────── */}
           <button
             onClick={handleLogin}
             disabled={loading}
-            className="w-full flex items-center justify-center gap-3 py-3.5 px-4 rounded-xl border border-white/5 bg-[#050816] hover:bg-violet-500/5 hover:border-violet-500/35 text-zinc-200 hover:text-violet-300 font-bold text-xs tracking-wider uppercase transition-all duration-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-[0_0_20px_rgba(124,58,237,0.12)]"
+            className="w-full flex items-center justify-center gap-3 py-4 px-5 rounded-2xl font-bold text-[14px] tracking-wide transition-all duration-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] min-h-[54px] group"
+            style={{
+              background: loading
+                ? 'rgba(255,255,255,0.07)'
+                : 'rgba(255,255,255,0.09)',
+              border: '1px solid rgba(255,255,255,0.12)',
+              color: '#fff',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.3)',
+            }}
+            onMouseEnter={(e) => {
+              if (!loading) {
+                (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.13)';
+                (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(167,139,250,0.35)';
+                (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 8px 32px rgba(109,40,217,0.25)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.09)';
+              (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.12)';
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 4px 24px rgba(0,0,0,0.3)';
+            }}
           >
-            {loading ? (
-              <div className="w-4.5 h-4.5 border-2 border-violet-400 border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <svg className="w-4.5 h-4.5 shrink-0" viewBox="0 0 24 24">
-                <path
-                  fill="#EA4335"
-                  d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.114-5.136 4.114-3.54 0-6.409-2.87-6.409-6.409s2.87-6.409 6.41-6.409c1.542 0 2.943.543 4.051 1.486L21.1 4.148C18.826 2.086 15.79 1 12.24 1 6.033 1 1 6.033 1 12.24s5.033 11.24 11.24 11.24c5.898 0 10.866-4.254 10.866-11.24 0-.668-.076-1.32-.218-1.955H12.24z"
-                />
+            <ButtonLoader show={loading}>
+              {/* Google G Logo */}
+              <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
+                <path fill="#EA4335" d="M5.266 9.765A7.077 7.077 0 0 1 12 4.909c1.69 0 3.218.6 4.418 1.582L19.91 3C17.782 1.145 15.055 0 12 0 7.27 0 3.198 2.698 1.24 6.65l4.026 3.115z"/>
+                <path fill="#34A853" d="M16.04 18.013c-1.09.703-2.474 1.078-4.04 1.078a7.077 7.077 0 0 1-6.723-4.823l-4.04 3.067A11.965 11.965 0 0 0 12 24c2.933 0 5.735-1.043 7.834-3l-3.793-2.987z"/>
+                <path fill="#4A90D9" d="M19.834 21c2.195-2.048 3.62-5.096 3.62-9 0-.71-.109-1.473-.272-2.182H12v4.637h6.436c-.317 1.559-1.17 2.766-2.395 3.558L19.834 21z"/>
+                <path fill="#FBBC05" d="M5.277 14.268A7.12 7.12 0 0 1 4.909 12c0-.782.125-1.533.357-2.235L1.24 6.65A11.934 11.934 0 0 0 0 12c0 1.92.445 3.73 1.237 5.335l4.04-3.067z"/>
               </svg>
-            )}
-            {loading ? 'Redirection active...' : 'Continue with Google'}
+              <span>Continue with Google</span>
+            </ButtonLoader>
           </button>
-          
-          <div className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-zinc-950/20 text-[9px] font-mono text-zinc-550 border border-white/[0.02]">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-            <span>Read-only sync permissions requested.</span>
+
+          {/* ── Privacy Reassurance ──────────────────────────────────── */}
+          <div
+            className="w-full rounded-2xl px-4 py-4 space-y-3"
+            style={{
+              background: 'rgba(255,255,255,0.025)',
+              border: '1px solid rgba(255,255,255,0.06)',
+            }}
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#a78bfa]" />
+              <span className="text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#a78bfa] font-mono">
+                Your Privacy is Protected
+              </span>
+            </div>
+
+            {[
+              { icon: Eye, text: 'We never read or store the contents of your emails.' },
+              { icon: Lock, text: 'No personal data is collected, retained, or sold.' },
+              { icon: ShieldCheck, text: 'Your account is never modified — read-only access only.' },
+            ].map(({ icon: Icon, text }) => (
+              <div key={text} className="flex items-start gap-2.5">
+                <div className="mt-0.5 w-4 h-4 rounded-md flex items-center justify-center shrink-0"
+                  style={{ background: 'rgba(167,139,250,0.1)', border: '1px solid rgba(167,139,250,0.15)' }}
+                >
+                  <Icon className="w-2.5 h-2.5 text-[#a78bfa]" />
+                </div>
+                <p className="text-[11px] text-zinc-400 leading-relaxed font-medium">{text}</p>
+              </div>
+            ))}
           </div>
-        </div>
 
-        {/* Disclaimer / Agreement */}
-        <p className="text-[10px] text-zinc-550 text-center leading-relaxed font-sans font-medium">
-          By signing in, you authorize asynchronous API synchronizations. Sensitive secrets and credential tokens are stored with AES protection. Read our <span className="text-zinc-400 hover:text-violet-400 underline cursor-pointer">Security Policy</span>.
-        </p>
-
+          {/* ── Terms line ───────────────────────────────────────────── */}
+          <p className="text-[11px] text-zinc-600 text-center leading-relaxed font-medium max-w-[280px]">
+            By continuing, you agree to our{' '}
+            <span className="text-zinc-400 hover:text-white underline underline-offset-2 cursor-pointer transition-colors duration-200">
+              Terms of Service
+            </span>{' '}and{' '}
+            <span className="text-zinc-400 hover:text-white underline underline-offset-2 cursor-pointer transition-colors duration-200">
+              Privacy Policy
+            </span>.
+          </p>
+        </motion.div>
       </motion.div>
     </div>
   );

@@ -27,10 +27,10 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       {/* 1. Desktop Sidebar */}
-      <aside className="hidden md:flex md:flex-col md:w-64 border-r border-border bg-gradient-to-b from-[#0B1020]/80 via-[#0B1020]/45 to-[#050816]/95 backdrop-blur-xl shrink-0">
+      <aside className="hidden md:flex md:flex-col md:w-64 border-r border-border bg-gradient-to-b from-card/90 via-card/55 to-background/98 backdrop-blur-xl shrink-0">
         {/* Brand logo */}
         <div className="flex items-center gap-3 px-6 py-6 border-b border-border/30">
-          <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-brand shadow-[0_0_20px_rgba(124,58,237,0.45)] border border-brand/20">
+          <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-brand shadow-[0_0_20px_rgba(124,58,237,0.25)] border border-brand/20">
             <Mail className="w-4.5 h-4.5 text-white" />
           </div>
           <span className="font-bold text-base tracking-tight bg-gradient-to-r from-white via-zinc-200 to-zinc-400 bg-clip-text text-transparent">
@@ -50,7 +50,7 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
                 className={cn(
                   'flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all duration-300 relative group',
                   isActive
-                    ? 'text-white bg-brand/10 border border-brand/20 shadow-[inset_0_0_12px_rgba(124,58,237,0.15)] glow-brand'
+                    ? 'text-white bg-brand/10 border border-brand/20 shadow-[inset_0_0_12px_rgba(124,58,237,0.12)] glow-brand'
                     : 'text-zinc-400 hover:bg-white/[0.02] hover:text-zinc-200 border border-transparent'
                 )}
               >
@@ -58,9 +58,9 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
                 {item.name}
                 {isActive && (
                   <motion.div
-                    layoutId="activeGlow"
-                    className="absolute right-3.5 w-1.5 h-1.5 rounded-full bg-brand shadow-[0_0_8px_#7c3aed]"
-                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                     layoutId="activeGlow"
+                     className="absolute right-3.5 w-1.5 h-1.5 rounded-full bg-brand shadow-[0_0_8px_rgba(168,85,247,0.8)]"
+                     transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                   />
                 )}
               </Link>
@@ -72,8 +72,8 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
         {session?.user && (
           <div className="p-4 border-t border-border/30 bg-zinc-950/30 flex flex-col gap-3">
             <div className="flex items-center gap-3 px-2">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand to-brand-hover p-[1px] shadow-[0_0_12px_rgba(124,58,237,0.15)]">
-                <div className="w-full h-full rounded-full bg-[#0b1020] flex items-center justify-center text-xs font-bold text-brand uppercase select-none">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand to-brand-hover p-[1px] shadow-[0_0_12px_rgba(124,58,237,0.12)]">
+                <div className="w-full h-full rounded-full bg-background flex items-center justify-center text-xs font-bold text-brand uppercase select-none">
                   {session.user.name?.slice(0, 2) || session.user.email?.slice(0, 2)}
                 </div>
               </div>
@@ -95,9 +95,9 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
 
       {/* 2. Mobile Nav top bar */}
       <div className="flex flex-col flex-1 w-full overflow-hidden">
-        <header className="flex items-center justify-between px-6 py-4 border-b border-border bg-[#0B1020]/80 backdrop-blur-xl md:hidden shrink-0 z-20">
+        <header className="flex items-center justify-between px-6 py-4 border-b border-border bg-card/80 backdrop-blur-xl md:hidden shrink-0 z-20">
           <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-brand shadow-[0_0_15px_rgba(124,58,237,0.3)]">
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-brand shadow-[0_0_15px_rgba(124,58,237,0.25)]">
               <Mail className="w-4 h-4 text-white" />
             </div>
             <span className="font-bold text-sm text-zinc-250">InboxIQ AI</span>
@@ -131,7 +131,7 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200, duration: 0.3 }}
-              className="fixed top-0 bottom-0 left-0 w-64 border-r border-border bg-[#0B1020]/95 backdrop-blur-xl z-50 md:hidden flex flex-col"
+              className="fixed top-0 bottom-0 left-0 w-64 border-r border-border bg-card/95 backdrop-blur-xl z-50 md:hidden flex flex-col"
             >
               <div className="flex items-center justify-between px-6 py-5 border-b border-border/30">
                 <div className="flex items-center gap-2">
@@ -155,8 +155,8 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
                       className={cn(
                         'flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all duration-150',
                         isActive
-                          ? 'bg-brand/10 border border-brand/20 text-white shadow-[inset_0_0_12px_rgba(124,58,237,0.15)] glow-brand'
-                          : 'text-zinc-450 hover:bg-zinc-900/50 hover:text-zinc-200'
+                          ? 'bg-brand/10 border border-brand/20 text-white shadow-[inset_0_0_12px_rgba(124,58,237,0.12)] glow-brand'
+                          : 'text-zinc-455 hover:bg-zinc-900/50 hover:text-zinc-200'
                       )}
                     >
                       <Icon className={cn('w-4.5 h-4.5', isActive ? 'text-brand' : 'text-zinc-500')} />
@@ -170,7 +170,7 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
                 <div className="p-4 border-t border-border/30 bg-zinc-950/20 flex flex-col gap-3">
                   <div className="flex items-center gap-3">
                     <div className="w-8.5 h-8.5 rounded-full bg-gradient-to-br from-brand to-brand-hover p-[1px]">
-                      <div className="w-full h-full rounded-full bg-[#0b1020] flex items-center justify-center text-xs font-bold text-brand uppercase">
+                      <div className="w-full h-full rounded-full bg-background flex items-center justify-center text-xs font-bold text-brand uppercase">
                         {session.user.name?.slice(0, 2) || session.user.email?.slice(0, 2)}
                       </div>
                     </div>
@@ -199,7 +199,7 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
           </div>
 
           {/* Premium Overhauled Footer */}
-          <footer className="w-full border-t border-border/20 bg-[#0B1020]/45 backdrop-blur-md mt-12 py-10 z-10">
+          <footer className="w-full border-t border-border/20 bg-card/45 backdrop-blur-md mt-12 py-10 z-10">
             <div className="max-w-7xl mx-auto px-6 md:px-8 space-y-8">
               
               {/* Upper Section */}
@@ -207,7 +207,7 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
                 {/* Left side brand info */}
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-2.5">
-                    <div className="flex items-center justify-center w-8.5 h-8.5 rounded-xl bg-brand/10 border border-brand/20 shadow-[0_0_15px_rgba(124,58,237,0.15)]">
+                    <div className="flex items-center justify-center w-8.5 h-8.5 rounded-xl bg-brand/10 border border-brand/20 shadow-[0_0_15px_rgba(124,58,237,0.12)]">
                       <Mail className="w-4.5 h-4.5 text-brand" />
                     </div>
                     <span className="font-extrabold text-sm text-white tracking-tight">InboxIQ AI</span>
@@ -232,7 +232,7 @@ export default function SidebarLayout({ children }: { children: React.ReactNode 
 
                 {/* Right Badge */}
                 <div className="shrink-0">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-extrabold bg-[#7c3aed]/10 border border-[#7c3aed]/25 text-brand uppercase tracking-wider glow-brand">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-extrabold bg-brand/10 border border-brand/20 text-brand uppercase tracking-wider glow-brand">
                     v1.0 MVP
                   </span>
                 </div>

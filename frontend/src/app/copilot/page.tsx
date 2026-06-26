@@ -6,6 +6,7 @@ import { apiService, CopilotSuggestionDto, CopilotTone, CopilotSuggestionType } 
 import { cn } from '@/lib/utils';
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Loader, ButtonLoader, PageLoader } from '@/components/ui';
 import {
   Bot,
   Sparkles,
@@ -177,6 +178,13 @@ export default function CopilotPage() {
 
   const totalPages = historyData?.meta?.totalPages ?? 0;
 
+  const isLoading =
+    replyMutation.isPending ||
+    rewriteMutation.isPending ||
+    followupMutation.isPending ||
+    meetingMutation.isPending ||
+    summaryMutation.isPending;
+
   // 7. Usage stats & metadata
   const { data: copilotStats } = useQuery({
     queryKey: ['copilot-stats'],
@@ -227,14 +235,14 @@ export default function CopilotPage() {
 
   return (
     <SidebarLayout>
-      <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-6 h-[calc(100vh-100px)] flex flex-col">
+      <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-6 h-[calc(100vh-100px)] flex flex-col animate-fade-in-up">
         
         {/* Header Block & Stats */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 shrink-0">
           <div>
-            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-zinc-200 to-zinc-400 bg-clip-text text-transparent flex items-center gap-3">
+            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-zinc-200 to-zinc-400 bg-clip-text text-transparent flex items-center gap-3 font-sans">
               AI Copilot Playground
-              <span className="text-[10px] font-bold bg-violet-500/10 text-violet-400 border border-violet-500/20 px-2.5 py-1 rounded-full uppercase tracking-wider glow-brand">
+              <span className="text-[10px] font-bold bg-primary/10 text-primary border border-primary/20 px-2.5 py-1 rounded-full uppercase tracking-wider glow-brand font-mono">
                 Gemini-1.5-Pro
               </span>
             </h1>
@@ -246,11 +254,11 @@ export default function CopilotPage() {
           {/* Mini Quick Stats */}
           <div className="flex gap-4 items-center overflow-x-auto no-scrollbar py-1">
             <div className="flex items-center gap-2 border border-white/5 bg-zinc-950/40 px-3 py-1.5 rounded-xl">
-              <Bot className="w-3.5 h-3.5 text-violet-400" />
+              <Bot className="w-3.5 h-3.5 text-primary" />
               <span className="text-[10px] text-zinc-400 font-mono">Usage: <strong className="text-zinc-200">{copilotStats?.totalUsageCount ?? 0}</strong></span>
             </div>
             <div className="flex items-center gap-2 border border-white/5 bg-zinc-950/40 px-3 py-1.5 rounded-xl">
-              <Zap className="w-3.5 h-3.5 text-cyan-400" />
+              <Zap className="w-3.5 h-3.5 text-coral" />
               <span className="text-[10px] text-zinc-400 font-mono">Avg: <strong className="text-zinc-200">{copilotStats?.averageGenerationTimeMs ? `${(copilotStats.averageGenerationTimeMs / 1000).toFixed(1)}s` : '0.0s'}</strong></span>
             </div>
           </div>
@@ -261,8 +269,8 @@ export default function CopilotPage() {
           
           {/* Left panel: mode selector */}
           <div className="lg:col-span-1 flex flex-col gap-4">
-            <div className="glass-panel p-4 rounded-3xl border border-white/5 flex flex-col h-full bg-[#0B1020]/40">
-              <span className="text-[10px] font-mono font-bold text-zinc-550 uppercase tracking-widest px-2 block mb-3">Modes</span>
+            <div className="glass-panel p-4 rounded-3xl border border-white/5 flex flex-col h-full bg-card/40">
+              <span className="text-[10px] font-mono font-bold text-zinc-500 uppercase tracking-widest px-2 block mb-3">Modes</span>
               <div className="space-y-1.5 flex-grow overflow-y-auto custom-scrollbar">
                 {(
                   [
@@ -282,14 +290,14 @@ export default function CopilotPage() {
                       onClick={() => setActiveTab(tab.id)}
                       className={`w-full flex items-start gap-3 px-4.5 py-3 rounded-2xl text-left transition-all duration-300 relative border ${
                         isActive
-                          ? 'bg-violet-500/10 border-violet-500/25 text-violet-400 shadow-[0_0_15px_rgba(124,58,237,0.06)]'
+                          ? 'bg-primary/10 border-primary/20 text-primary shadow-[0_0_15px_rgba(124,58,237,0.06)]'
                           : 'border-transparent text-zinc-400 hover:bg-zinc-950/40 hover:text-zinc-200'
                       }`}
                     >
                       <Icon className="w-4 h-4 shrink-0 mt-0.5" />
-                      <div className="min-w-0">
+                      <div className="min-w-0 font-sans">
                         <span className="text-xs font-bold block">{tab.label}</span>
-                        <span className="text-[9px] text-zinc-500 block font-sans truncate">{tab.description}</span>
+                        <span className="text-[9px] text-zinc-500 block truncate">{tab.description}</span>
                       </div>
                     </button>
                   );
@@ -299,8 +307,8 @@ export default function CopilotPage() {
           </div>
 
           {/* Right Panel: Chat interface */}
-          <div className="lg:col-span-3 glass-panel rounded-3xl border border-white/5 bg-[#0B1020]/25 flex flex-col h-full overflow-hidden relative">
-            <div className="absolute top-0 right-0 w-80 h-80 bg-violet-600/5 rounded-full blur-3xl pointer-events-none" />
+          <div className="lg:col-span-3 glass-panel rounded-3xl border border-white/5 bg-card/25 flex flex-col h-full overflow-hidden relative">
+            <div className="absolute top-0 right-0 w-80 h-80 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
             
             {activeTab !== 'history' ? (
               // Playground chat flow
@@ -314,7 +322,7 @@ export default function CopilotPage() {
                         <select
                           value={replyEmailId}
                           onChange={(e) => setReplyEmailId(e.target.value)}
-                          className="w-full bg-zinc-950 border border-white/5 text-xs text-zinc-300 py-2 px-3 rounded-xl outline-none focus:border-violet-500 transition-colors"
+                          className="w-full bg-zinc-950 border border-white/5 text-xs text-zinc-300 py-2 px-3 rounded-xl outline-none focus:border-primary transition-colors font-sans"
                         >
                           <option value="">-- Choose email context --</option>
                           {emails.map((e) => (
@@ -332,7 +340,7 @@ export default function CopilotPage() {
                             onClick={() => setReplyTone(t.value)}
                             className={`px-2.5 py-1 border text-[9px] font-bold rounded-lg transition-all ${
                               replyTone === t.value
-                                ? 'bg-violet-600 border-violet-500/40 text-white'
+                                ? 'bg-primary border-primary/40 text-white'
                                 : 'bg-zinc-950/40 border-white/5 text-zinc-400 hover:text-zinc-250'
                             }`}
                           >
@@ -353,7 +361,7 @@ export default function CopilotPage() {
                             onClick={() => setRewriteTone(t.value)}
                             className={`px-2.5 py-1 border text-[9px] font-bold rounded-lg transition-all ${
                               rewriteTone === t.value
-                                ? 'bg-violet-600 border-violet-500/40 text-white'
+                                ? 'bg-primary border-primary/40 text-white'
                                 : 'bg-zinc-950/40 border-white/5 text-zinc-400 hover:text-zinc-250'
                             }`}
                           >
@@ -370,7 +378,7 @@ export default function CopilotPage() {
                         <select
                           value={followupEmailId}
                           onChange={(e) => setFollowupEmailId(e.target.value)}
-                          className="w-full bg-zinc-950 border border-white/5 text-xs text-zinc-300 py-2 px-3 rounded-xl outline-none focus:border-violet-500 transition-colors"
+                          className="w-full bg-zinc-950 border border-white/5 text-xs text-zinc-300 py-2 px-3 rounded-xl outline-none focus:border-primary transition-colors font-sans"
                         >
                           <option value="">-- Choose email context --</option>
                           {emails.map((e) => (
@@ -388,7 +396,7 @@ export default function CopilotPage() {
                           max={30}
                           value={followupDelay}
                           onChange={(e) => setFollowupDelay(Number(e.target.value))}
-                          className="w-16 bg-zinc-950 border border-white/5 text-xs text-zinc-300 py-1.5 px-2 rounded-xl outline-none focus:border-violet-500 font-mono text-center"
+                          className="w-16 bg-zinc-950 border border-white/5 text-xs text-zinc-300 py-1.5 px-2 rounded-xl outline-none focus:border-primary font-mono text-center"
                         />
                       </div>
                     </>
@@ -400,7 +408,7 @@ export default function CopilotPage() {
                         <select
                           value={meetingEmailId}
                           onChange={(e) => setMeetingEmailId(e.target.value)}
-                          className="w-full bg-zinc-950 border border-white/5 text-xs text-zinc-300 py-2 px-3 rounded-xl outline-none focus:border-violet-500 transition-colors"
+                          className="w-full bg-zinc-950 border border-white/5 text-xs text-zinc-300 py-2 px-3 rounded-xl outline-none focus:border-primary transition-colors font-sans"
                         >
                           <option value="">-- Choose Context (Opt) --</option>
                           {emails.map((e) => (
@@ -414,7 +422,7 @@ export default function CopilotPage() {
                         <select
                           value={meetingTemplate}
                           onChange={(e) => setMeetingTemplate(e.target.value)}
-                          className="w-full bg-zinc-950 border border-white/5 text-xs text-zinc-300 py-2 px-3 rounded-xl outline-none focus:border-violet-500 transition-colors"
+                          className="w-full bg-zinc-950 border border-white/5 text-xs text-zinc-300 py-2 px-3 rounded-xl outline-none focus:border-primary transition-colors font-sans"
                         >
                           {templates.map((tpl) => (
                             <option key={tpl} value={tpl}>{tpl}</option>
@@ -425,7 +433,7 @@ export default function CopilotPage() {
                         <select
                           value={meetingDuration}
                           onChange={(e) => setMeetingDuration(Number(e.target.value))}
-                          className="w-full bg-zinc-950 border border-white/5 text-xs text-zinc-300 py-2 px-3 rounded-xl outline-none focus:border-violet-550 transition-colors"
+                          className="w-full bg-zinc-950 border border-white/5 text-xs text-zinc-300 py-2 px-3 rounded-xl outline-none focus:border-primary transition-colors font-sans"
                         >
                           <option value={15}>15 Mins</option>
                           <option value={30}>30 Mins</option>
@@ -439,7 +447,7 @@ export default function CopilotPage() {
                           placeholder="Times (e.g. Mon 9am)"
                           value={meetingTimes}
                           onChange={(e) => setMeetingTimes(e.target.value)}
-                          className="w-full bg-zinc-950 border border-white/5 text-xs text-zinc-300 py-2 px-3 rounded-xl outline-none focus:border-violet-500 font-sans"
+                          className="w-full bg-zinc-950 border border-white/5 text-xs text-zinc-300 py-2 px-3 rounded-xl outline-none focus:border-primary font-sans"
                         />
                       </div>
                     </div>
@@ -450,7 +458,7 @@ export default function CopilotPage() {
                       <select
                         value={summaryEmailId}
                         onChange={(e) => setSummaryEmailId(e.target.value)}
-                        className="w-full bg-zinc-950 border border-white/5 text-xs text-zinc-300 py-2 px-3 rounded-xl outline-none focus:border-violet-500 transition-colors"
+                        className="w-full bg-zinc-950 border border-white/5 text-xs text-zinc-300 py-2 px-3 rounded-xl outline-none focus:border-primary transition-colors font-sans"
                       >
                         <option value="">-- Choose email context to summarize --</option>
                         {emails.map((e) => (
@@ -474,7 +482,7 @@ export default function CopilotPage() {
                         placeholder="Paste draft copy to rewrite here..."
                         value={rewriteText}
                         onChange={(e) => setRewriteText(e.target.value)}
-                        className="w-full bg-zinc-950 border border-white/5 text-xs text-zinc-300 py-3 px-4 rounded-xl outline-none focus:border-violet-500 h-28 placeholder:text-zinc-700 resize-none font-sans"
+                        className="w-full bg-zinc-950 border border-white/5 text-xs text-zinc-300 py-3 px-4 rounded-xl outline-none focus:border-primary h-28 placeholder:text-zinc-700 resize-none font-sans"
                       />
                     </div>
                   )}
@@ -534,8 +542,24 @@ export default function CopilotPage() {
                     const IconComponent = placeholderIcon;
 
                     if (!hasResult) {
+                      if (isLoading) {
+                        return (
+                          <div className="h-full flex flex-col items-center justify-center text-center p-8 text-zinc-500 text-xs space-y-4">
+                            <div className="p-5.5 rounded-3xl border border-white/[0.03] bg-zinc-950/20 backdrop-blur-md flex items-center justify-center shadow-lg">
+                              <Loader size="lg" />
+                            </div>
+                            <p className="font-bold text-zinc-200 tracking-tight animate-pulse uppercase tracking-wider font-mono">
+                              Synthesizing email reply drafts...
+                            </p>
+                            <p className="text-xs text-zinc-500 mt-1 max-w-xs leading-relaxed mx-auto">
+                              Generating custom draft suggestions using Gemini-1.5-Pro...
+                            </p>
+                          </div>
+                        );
+                      }
+
                       return (
-                        <div className="h-full flex flex-col items-center justify-center text-center p-8 text-zinc-550 italic text-xs space-y-4">
+                        <div className="h-full flex flex-col items-center justify-center text-center p-8 text-zinc-500 italic text-xs space-y-4">
                           <div className="w-12 h-12 bg-white/5 border border-white/5 flex items-center justify-center text-zinc-400 rounded-2xl shadow-inner">
                             <IconComponent className="w-6 h-6 stroke-[1.25]" />
                           </div>
@@ -549,51 +573,55 @@ export default function CopilotPage() {
                       <div className="space-y-6">
                         {/* User Bubble (Input Parameters & Context) */}
                         <div className="flex justify-end">
-                          <div className="max-w-[85%] bg-zinc-900 border border-white/5 px-4.5 py-3 rounded-2xl text-xs space-y-2 text-zinc-350 shadow-sm relative">
+                          <div className="max-w-[85%] bg-zinc-900 border border-white/5 px-4.5 py-3 rounded-2xl text-xs space-y-2 text-zinc-400 shadow-sm relative">
                             <span className="text-[9px] font-mono text-zinc-500 uppercase block text-right">User Prompts</span>
                             
                             {activeTab === 'reply' && (
-                              <p className="font-sans">Draft a <span className="font-bold text-violet-400 lowercase">{replyTone}</span> reply for email ID <code className="text-[10px] bg-zinc-950 px-1.5 py-0.5 rounded text-zinc-500">{replyEmailId.slice(0, 8)}</code>. Instructions: &ldquo;{replyInstructions || 'No custom instruction specs'}&rdquo;</p>
+                              <p className="font-sans">Draft a <span className="font-bold text-primary lowercase">{replyTone}</span> reply for email ID <code className="text-[10px] bg-zinc-950 px-1.5 py-0.5 rounded text-zinc-500 font-mono">{replyEmailId.slice(0, 8)}</code>. Instructions: &ldquo;{replyInstructions || 'No custom instruction specs'}&rdquo;</p>
                             )}
                             {activeTab === 'rewrite' && (
-                              <p className="font-sans">Rewrite the draft to sound <span className="font-bold text-violet-400 lowercase">{rewriteTone}</span>. Guidelines: &ldquo;{rewriteInstructions || 'No instructions specs'}&rdquo;</p>
+                              <p className="font-sans">Rewrite the draft to sound <span className="font-bold text-primary lowercase">{rewriteTone}</span>. Guidelines: &ldquo;{rewriteInstructions || 'No instructions specs'}&rdquo;</p>
                             )}
                             {activeTab === 'followup' && (
-                              <p className="font-sans">Draft followup reminder for context email <code className="text-[10px] bg-zinc-950 px-1.5 py-0.5 rounded text-zinc-500">{followupEmailId.slice(0, 8)}</code> in {followupDelay} days.</p>
+                              <p className="font-sans">Draft followup reminder for context email <code className="text-[10px] bg-zinc-950 px-1.5 py-0.5 rounded text-zinc-500 font-mono">{followupEmailId.slice(0, 8)}</code> in {followupDelay} days.</p>
                             )}
                             {activeTab === 'meeting' && (
-                              <p className="font-sans">Create meeting template <span className="font-bold text-violet-400">{meetingTemplate}</span> invite. Purpose: &ldquo;{meetingAgenda}&rdquo; duration: {meetingDuration} mins.</p>
+                              <p className="font-sans">Create meeting template <span className="font-bold text-primary">{meetingTemplate}</span> invite. Purpose: &ldquo;{meetingAgenda}&rdquo; duration: {meetingDuration} mins.</p>
                             )}
                             {activeTab === 'summary' && (
-                              <p className="font-sans">Collapse email thread digest context ID <code className="text-[10px] bg-zinc-950 px-1.5 py-0.5 rounded text-zinc-500">{summaryEmailId.slice(0, 8)}</code>.</p>
+                              <p className="font-sans">Collapse email thread digest context ID <code className="text-[10px] bg-zinc-950 px-1.5 py-0.5 rounded text-zinc-500 font-mono">{summaryEmailId.slice(0, 8)}</code>.</p>
                             )}
                           </div>
                         </div>
 
                         {/* AI response Bubble */}
                         <div className="flex justify-start">
-                          <div className="max-w-[90%] bg-zinc-950/45 border border-violet-500/10 p-5 rounded-2xl text-xs space-y-3.5 shadow-md relative">
+                          <div className="max-w-[90%] bg-zinc-950/45 border border-primary/10 p-5 rounded-2xl text-xs space-y-3.5 shadow-md relative">
                             <div className="flex items-center justify-between border-b border-white/[0.04] pb-2">
-                              <span className="text-[9px] font-mono font-semibold text-violet-400 uppercase tracking-widest flex items-center gap-1.5">
-                                <Bot className="w-3.5 h-3.5 text-violet-400 animate-pulse" /> Copilot Draft
+                              <span className="text-[9px] font-mono font-semibold text-primary uppercase tracking-widest flex items-center gap-1.5">
+                                <Bot className="w-3.5 h-3.5 text-primary animate-pulse" /> Copilot Draft
                               </span>
                               
                               <div className="flex items-center gap-2">
                                 <button
                                   onClick={() => copyToClipboard(resultText, resultSetter)}
-                                  className="p-1 rounded border border-white/5 hover:bg-zinc-900 text-zinc-400 hover:text-zinc-200 cursor-pointer flex items-center gap-1.5 text-[9px] font-bold tracking-wider uppercase transition-colors"
+                                  className="p-1 rounded border border-white/5 hover:bg-zinc-900 text-zinc-400 hover:text-zinc-250 cursor-pointer flex items-center gap-1.5 text-[9px] font-bold tracking-wider uppercase transition-colors font-mono"
                                 >
-                                  {resultCopied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                                  {resultCopied ? <Check className="w-3.5 h-3.5 text-coral" /> : <Copy className="w-3.5 h-3.5" />}
                                   {resultCopied ? 'Copied' : 'Copy'}
                                 </button>
                                 {resultObj && (
                                   <button
                                     onClick={() => handleRegenerate(resultObj.id)}
                                     disabled={regeneratingId === resultObj.id}
-                                    className="p-1 rounded border border-white/5 hover:bg-zinc-900 text-zinc-400 hover:text-zinc-200 cursor-pointer flex items-center gap-1.5 text-[9px] font-bold tracking-wider uppercase transition-colors"
+                                    className="p-1 rounded border border-white/5 hover:bg-zinc-900 text-zinc-400 hover:text-zinc-250 cursor-pointer flex items-center gap-1.5 text-[9px] font-bold tracking-wider uppercase transition-colors font-mono min-w-[75px] min-h-[26px]"
                                   >
-                                    <RefreshCw className={cn('w-3.5 h-3.5', regeneratingId === resultObj.id && 'animate-spin')} />
-                                    Regen
+                                    {regeneratingId === resultObj.id ? (
+                                      <Loader size="sm" />
+                                    ) : (
+                                      <RefreshCw className="w-3.5 h-3.5" />
+                                    )}
+                                    <span>Regen</span>
                                   </button>
                                 )}
                               </div>
@@ -658,12 +686,6 @@ export default function CopilotPage() {
                         textVal = '';
                       }
 
-                      const isLoading =
-                        replyMutation.isPending ||
-                        rewriteMutation.isPending ||
-                        followupMutation.isPending ||
-                        meetingMutation.isPending ||
-                        summaryMutation.isPending;
 
                       return (
                         <div className="w-full flex items-center bg-zinc-950 border border-white/5 rounded-2xl overflow-hidden px-4.5 py-3 gap-3 relative shadow-inner">
@@ -673,16 +695,16 @@ export default function CopilotPage() {
                               value={textVal}
                               onChange={(e) => textSetter(e.target.value)}
                               onKeyDown={(e) => {
-                                if (e.key === 'Enter' && !btnDisabled) {
-                                  btnAction();
-                                }
+                                  if (e.key === 'Enter' && !btnDisabled) {
+                                    btnAction();
+                                  }
                               }}
                               placeholder={placeholder}
                               disabled={btnDisabled && !isLoading}
-                              className="flex-1 bg-transparent text-xs text-zinc-200 placeholder:text-zinc-650 outline-none font-sans"
+                              className="flex-1 bg-transparent text-xs text-zinc-200 placeholder:text-zinc-600 outline-none font-sans"
                             />
                           ) : (
-                            <span className="flex-1 text-xs text-zinc-550 truncate font-sans">
+                            <span className="flex-1 text-xs text-zinc-500 truncate font-sans">
                               {placeholder}
                             </span>
                           )}
@@ -690,13 +712,11 @@ export default function CopilotPage() {
                           <button
                             onClick={btnAction}
                             disabled={btnDisabled}
-                            className="bg-violet-600 hover:bg-violet-500 text-white rounded-xl p-2.5 transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center shadow-lg shadow-violet-600/10 border border-violet-500/20 active:scale-95"
+                            className="bg-primary hover:bg-primary-hover text-white rounded-xl p-2.5 transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center shadow-lg shadow-primary/20 border border-primary/20 active:scale-95 min-w-[42px] min-h-[42px]"
                           >
-                            {isLoading ? (
-                              <RefreshCw className="w-4 h-4 animate-spin text-zinc-300" />
-                            ) : (
-                              <CornerDownLeft className="w-4 h-4 text-violet-100" />
-                            )}
+                            <ButtonLoader show={isLoading}>
+                              <CornerDownLeft className="w-4 h-4 text-white" />
+                            </ButtonLoader>
                           </button>
                         </div>
                       );
@@ -707,12 +727,12 @@ export default function CopilotPage() {
               </div>
             ) : (
               // History Logs panel
-              <div className="p-6 h-full flex flex-col min-h-0 bg-[#0B1020]/25 overflow-y-auto custom-scrollbar space-y-6">
+              <div className="p-6 h-full flex flex-col min-h-0 bg-card/25 overflow-y-auto custom-scrollbar space-y-6">
                 
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-4 shrink-0">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-4 shrink-0 font-sans">
                   <div>
                     <h3 className="text-sm font-bold text-zinc-200 uppercase tracking-wider font-mono">Copilot Generation History</h3>
-                    <p className="text-xs text-zinc-550 mt-0.5">Logs of past replies, rewrites, and thread digests.</p>
+                    <p className="text-xs text-zinc-500 mt-0.5">Logs of past replies, rewrites, and thread digests.</p>
                   </div>
 
                   <select
@@ -721,7 +741,7 @@ export default function CopilotPage() {
                       setHistoryFilter(e.target.value as any);
                       setHistoryPage(1);
                     }}
-                    className="bg-zinc-950 border border-white/5 text-xs font-semibold text-zinc-350 px-3 py-2.5 rounded-xl outline-none cursor-pointer font-sans"
+                    className="bg-zinc-950 border border-white/5 text-xs font-semibold text-zinc-300 px-3 py-2.5 rounded-xl outline-none cursor-pointer"
                   >
                     <option value="ALL">All Types</option>
                     <option value="REPLY">Reply Suggestions</option>
@@ -734,11 +754,13 @@ export default function CopilotPage() {
 
                 <div className="flex-1 overflow-y-auto space-y-4 pr-1 custom-scrollbar min-h-0">
                   {isHistoryLoading ? (
-                    [1, 2].map((i) => (
-                      <div key={i} className="p-5 border border-white/5 bg-zinc-950/20 rounded-2xl animate-pulse h-28 shimmer-bg" />
-                    ))
+                    <PageLoader 
+                      text="Syncing copilot history" 
+                      subtitle="Retrieving logs of past drafts and summaries..." 
+                      minHeight="min-h-[250px]"
+                    />
                   ) : !historyData?.history || historyData.history.length === 0 ? (
-                    <div className="h-48 border border-dashed border-white/5 rounded-2xl flex flex-col items-center justify-center gap-2 text-zinc-650 italic text-[11px] font-sans">
+                    <div className="h-48 border border-dashed border-white/5 rounded-2xl flex flex-col items-center justify-center gap-2 text-zinc-500 italic text-[11px] font-sans">
                       No previous copilot suggestions logs found matching filters.
                     </div>
                   ) : (
@@ -747,13 +769,13 @@ export default function CopilotPage() {
                         key={log.id}
                         className="p-5 border border-white/5 bg-zinc-950/15 rounded-2xl space-y-3.5 relative overflow-hidden"
                       >
-                        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.04] pb-2.5">
+                        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.04] pb-2.5 font-mono">
                           <div className="flex items-center gap-3.5">
-                            <span className="px-2 py-0.5 border border-violet-500/20 bg-violet-500/10 text-violet-400 text-[9px] font-bold rounded uppercase tracking-wider font-mono">
+                            <span className="px-2 py-0.5 border border-primary/20 bg-primary/10 text-primary text-[9px] font-bold rounded uppercase tracking-wider">
                               {log.suggestionType}
                             </span>
                             {log.tone && (
-                              <span className="px-2 py-0.5 border border-fuchsia-500/20 bg-fuchsia-500/10 text-fuchsia-400 text-[9px] font-bold rounded uppercase tracking-wider font-mono">
+                              <span className="px-2 py-0.5 border border-primary/20 bg-primary/10 text-primary text-[9px] font-bold rounded uppercase tracking-wider">
                                 {log.tone}
                               </span>
                             )}
@@ -803,7 +825,7 @@ export default function CopilotPage() {
                     <button
                       onClick={() => setHistoryPage((p) => Math.max(1, p - 1))}
                       disabled={historyPage === 1}
-                      className="p-2 border border-zinc-800 rounded-xl text-zinc-550 hover:text-zinc-300 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-all hover:bg-zinc-950"
+                      className="p-2 border border-zinc-800 rounded-xl text-zinc-500 hover:text-zinc-300 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-all hover:bg-zinc-950"
                     >
                       <ChevronLeft className="w-4 h-4" />
                     </button>
@@ -813,7 +835,7 @@ export default function CopilotPage() {
                     <button
                       onClick={() => setHistoryPage((p) => Math.min(totalPages, p + 1))}
                       disabled={historyPage === totalPages}
-                      className="p-2 border border-zinc-800 rounded-xl text-zinc-550 hover:text-zinc-300 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-all hover:bg-zinc-950"
+                      className="p-2 border border-zinc-800 rounded-xl text-zinc-500 hover:text-zinc-300 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-all hover:bg-zinc-950"
                     >
                       <ChevronRight className="w-4 h-4" />
                     </button>

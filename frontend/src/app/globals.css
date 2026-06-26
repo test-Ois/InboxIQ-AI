@@ -1,25 +1,67 @@
 @import "tailwindcss";
 
+/* ─── Premium Design System & OKLCH Color Architecture ─── */
 @theme {
-  --color-background: #050816;
-  --color-foreground: #fafafa;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
   
-  --color-border: rgba(255, 255, 255, 0.06);
-  --color-input: #111827;
-  --color-ring: #7c3aed;
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
   
-  --color-brand: #7c3aed;
-  --color-brand-hover: #a855f7;
-  --color-brand-muted: rgba(124, 58, 237, 0.15);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
   
-  --color-glass-bg: rgba(11, 16, 32, 0.6);
-  --color-panel-bg: #0b1020;
-  --color-card-bg: #111827;
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+  --color-danger: var(--danger);
 
+  /* Brand specific aliases */
+  --color-brand: var(--primary);
+  --color-brand-hover: var(--secondary);
+  --color-brand-muted: var(--muted);
+
+  --color-royal-blue: var(--info);
+  --color-coral: var(--success);
+  --color-red-pink: var(--warning);
+  --color-electric-purple: var(--secondary);
+  --color-deep-violet: var(--primary);
+  
+  /* Radius Philosophy */
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Animation Keyframes */
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
   --animate-fade-in-up: fade-in-up 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   --animate-shimmer: shimmer 2s infinite linear;
+  --animate-float: float 4s ease-in-out infinite;
+  --animate-pulse-glow: pulse-glow 2.5s ease-in-out infinite;
+  --animate-gradient: gradient-shift 6s ease infinite;
+  --animate-slide-up: slide-up-fade 0.5s ease-out;
 }
 
 @keyframes accordion-down {
@@ -44,34 +86,185 @@
 }
 
 @keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.08); }
+  50% { box-shadow: 0 0 24px 6px rgba(168, 85, 247, 0.22); }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes slide-up-fade {
+  0% { opacity: 0; transform: translateY(12px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Theme Variables (Premium Dark SaaS - OKLCH) ─── */
+:root {
+  --background: oklch(0.09 0.02 260);
+  --foreground: oklch(0.96 0.008 260);
+  
+  --card: oklch(0.14 0.015 260 / 60%);
+  --card-foreground: oklch(0.96 0.008 260);
+  
+  --popover: oklch(0.14 0.015 260 / 90%);
+  --popover-foreground: oklch(0.96 0.008 260);
+  
+  --primary: oklch(0.50 0.22 285);
+  --primary-hover: oklch(0.44 0.20 285);
+  --primary-foreground: oklch(0.96 0.008 260);
+  
+  --secondary: oklch(0.62 0.24 295);
+  --secondary-foreground: oklch(0.96 0.008 260);
+  
+  --muted: oklch(0.18 0.012 260);
+  --muted-foreground: oklch(0.65 0.01 260);
+  
+  --accent: oklch(0.18 0.02 295 / 30%);
+  --accent-foreground: oklch(0.96 0.008 260);
+  
+  --destructive: oklch(0.55 0.22 15);
+  
+  --border: rgba(255, 255, 255, 0.06);
+  --input: rgba(255, 255, 255, 0.08);
+  --ring: oklch(0.62 0.24 295);
+  
+  --radius: 0.75rem;
+
+  /* Custom Status Tiers */
+  --success: oklch(0.62 0.20 35);
+  --warning: oklch(0.55 0.22 15);
+  --danger: oklch(0.55 0.22 15);
+  --info: oklch(0.50 0.22 255);
+}
+
+.dark {
+  --background: oklch(0.09 0.02 260);
+  --foreground: oklch(0.96 0.008 260);
+  
+  --card: oklch(0.14 0.015 260 / 60%);
+  --card-foreground: oklch(0.96 0.008 260);
+  
+  --popover: oklch(0.14 0.015 260 / 90%);
+  --popover-foreground: oklch(0.96 0.008 260);
+  
+  --primary: oklch(0.50 0.22 285);
+  --primary-hover: oklch(0.44 0.20 285);
+  --primary-foreground: oklch(0.96 0.008 260);
+  
+  --secondary: oklch(0.62 0.24 295);
+  --secondary-foreground: oklch(0.96 0.008 260);
+  
+  --muted: oklch(0.18 0.012 260);
+  --muted-foreground: oklch(0.65 0.01 260);
+  
+  --accent: oklch(0.18 0.02 295 / 30%);
+  --accent-foreground: oklch(0.96 0.008 260);
+  
+  --destructive: oklch(0.55 0.22 15);
+  
+  --border: rgba(255, 255, 255, 0.06);
+  --input: rgba(255, 255, 255, 0.08);
+  --ring: oklch(0.62 0.24 295);
+}
+
+/* ─── Base Layer ─── */
 @layer base {
   * {
-    border-color: var(--color-border);
+    border-color: var(--border);
+    outline-color: oklch(0.62 0.24 295 / 40%);
   }
   
   body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
+    background-color: var(--background);
+    color: var(--foreground);
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    @apply antialiased;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  html {
+    scroll-smooth: smooth;
+    touch-action: manipulation;
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ─── Responsive Typography (Fluid Sizing) ─── */
+  h1 {
+    font-size: clamp(1.75rem, 4vw + 0.5rem, 4.5rem);
+    line-height: 1.1;
+    @apply font-bold tracking-tight;
+  }
+  h2 {
+    font-size: clamp(1.35rem, 2.5vw + 0.5rem, 2.5rem);
+    line-height: 1.2;
+    @apply font-bold tracking-tight;
+  }
+  h3 {
+    font-size: clamp(1.1rem, 1.5vw + 0.4rem, 1.5rem);
+    line-height: 1.3;
+    @apply font-bold tracking-tight;
+  }
+
+  /* Prevent auto-zoom on mobile inputs */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="search"],
+  select,
+  textarea {
+    font-size: 16px;
   }
 }
 
-/* Premium Glassmorphism Panel with radial reflection */
+/* ─── Premium Glassmorphism Panels & Utilities ─── */
+.glass {
+  background: oklch(1 0 0 / 5%);
+  backdrop-filter: blur(16px) saturate(1.8);
+  -webkit-backdrop-filter: blur(16px) saturate(1.8);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+}
+
+.glass-strong {
+  background: oklch(1 0 0 / 8%);
+  backdrop-filter: blur(24px) saturate(2);
+  -webkit-backdrop-filter: blur(24px) saturate(2);
+  border: 1px solid oklch(1 0 0 / 10%);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.6);
+}
+
+/* Premium Glassmorphism Panel with radial reflection (Steel Blue themed) */
 .glass-panel {
-  background: linear-gradient(135deg, rgba(11, 16, 32, 0.6) 0%, rgba(5, 8, 22, 0.4) 100%);
+  background: linear-gradient(135deg, oklch(0.17 0.018 245 / 75%) 0%, oklch(0.12 0.015 245 / 50%) 100%);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5), inset 0 1px 1px 0 rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.55), inset 0 1px 1px 0 oklch(1 0 0 / 6%);
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -81,27 +274,27 @@
 }
 
 .glass-panel-hover:hover {
-  background: linear-gradient(135deg, rgba(17, 24, 39, 0.75) 0%, rgba(11, 16, 32, 0.55) 100%) !important;
-  border-color: rgba(124, 58, 237, 0.35) !important;
-  box-shadow: 0 12px 40px 0 rgba(124, 58, 237, 0.12), inset 0 1px 1px 0 rgba(255, 255, 255, 0.1) !important;
-  transform: translateY(-4px) scale(1.005);
+  background: linear-gradient(135deg, oklch(0.14 0.015 260 / 85%) 0%, oklch(0.09 0.02 260 / 65%) 100%) !important;
+  border-color: oklch(0.50 0.22 285 / 22%) !important;
+  box-shadow: 0 16px 48px 0 rgba(0, 0, 0, 0.7), inset 0 1px 1px 0 oklch(1 0 0 / 9%) !important;
+  transform: translateY(-2px);
 }
 
-/* Premium Glow Underlays */
+/* ─── Premium Glow Underlays ─── */
 .glow-brand {
-  box-shadow: 0 0 25px rgba(124, 58, 237, 0.15);
+  box-shadow: 0 0 25px oklch(0.50 0.22 285 / 12%);
 }
 .glow-emerald {
-  box-shadow: 0 0 25px rgba(16, 185, 129, 0.15);
+  box-shadow: 0 0 25px oklch(0.62 0.20 35 / 12%);
 }
 .glow-rose {
-  box-shadow: 0 0 25px rgba(244, 63, 94, 0.15);
+  box-shadow: 0 0 25px oklch(0.55 0.22 15 / 12%);
 }
 .glow-sky {
-  box-shadow: 0 0 25px rgba(34, 211, 238, 0.15);
+  box-shadow: 0 0 25px oklch(0.50 0.22 255 / 12%);
 }
 
-/* Monospace & Text Gradients */
+/* ─── Monospace & Text Gradients ─── */
 .text-gradient-purple {
   background: linear-gradient(135deg, #ffffff 0%, #a855f7 50%, #7c3aed 100%);
   -webkit-background-clip: text;
@@ -109,8 +302,15 @@
   background-clip: text;
 }
 
+.text-gradient-blue {
+  background: linear-gradient(135deg, #ffffff 0%, #2563eb 60%, #1d4ed8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 .text-gradient-cyan {
-  background: linear-gradient(135deg, #ffffff 0%, #22d3ee 60%, #0284c7 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #a855f7 50%, #7c3aed 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -123,7 +323,7 @@
   background-clip: text;
 }
 
-/* Hide scrollbar default styles */
+/* ─── Hide Scrollbar Helpers ─── */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -132,14 +332,29 @@
   scrollbar-width: none;
 }
 
-/* Shimmer load states helper */
+/* ─── Shimmer load states helper ─── */
 .shimmer-bg {
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.02) 25%, rgba(255, 255, 255, 0.06) 50%, rgba(255, 255, 255, 0.02) 75%);
+  background: linear-gradient(90deg, oklch(1 0 0 / 1%) 25%, oklch(1 0 0 / 4%) 50%, oklch(1 0 0 / 1%) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite linear;
 }
 
-/* Custom premium scrollbar for specific elements */
+/* ─── Custom Premium Scrollbar ─── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: oklch(0.96 0.008 260 / 10%);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.50 0.22 285 / 25%);
+}
+
 .custom-scrollbar::-webkit-scrollbar {
   width: 5px;
   height: 5px;
@@ -148,14 +363,22 @@
   background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.06);
+  background: oklch(1 0 0 / 4%);
   border-radius: 9999px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(124, 58, 237, 0.3);
+  background: oklch(0.50 0.22 285 / 20%);
 }
 
-/* Custom checkbox animation wrapper */
+/* Hide scrollbars on touch devices for a cleaner look */
+@media (hover: none) and (pointer: coarse) {
+  ::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+  }
+}
+
+/* ─── Custom Checkbox Animation Wrapper ─── */
 .custom-checkbox {
   position: relative;
   display: inline-flex;
@@ -164,28 +387,35 @@
   width: 20px;
   height: 20px;
   border-radius: 6px;
-  border: 2px solid rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.02);
+  border: 2px solid oklch(1 0 0 / 12%);
+  background: oklch(1 0 0 / 1%);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .custom-checkbox:hover {
-  border-color: rgba(124, 58, 237, 0.5);
-  background: rgba(124, 58, 237, 0.05);
+  border-color: oklch(0.50 0.22 285 / 40%);
+  background: oklch(0.50 0.22 285 / 3%);
 }
 
 .custom-checkbox-active {
-  border-color: #7c3aed;
-  background: #7c3aed;
-  box-shadow: 0 0 10px rgba(124, 58, 237, 0.4);
+  border-color: oklch(0.50 0.22 285);
+  background: oklch(0.50 0.22 285);
+  box-shadow: 0 0 10px oklch(0.50 0.22 285 / 30%);
 }
 
-/* Premium Grid Background */
+/* ─── Premium Grid Background (Muted Dark Grid) ─── */
+.grid-bg {
+  background-image:
+    linear-gradient(oklch(1 0 0 / 3%) 1px, transparent 1px),
+    linear-gradient(90deg, oklch(1 0 0 / 3%) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
 .grid-background {
-  background-size: 35px 35px;
+  background-size: 45px 45px;
   background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+    linear-gradient(to right, oklch(1 0 0 / 1.5%) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(1 0 0 / 1.5%) 1px, transparent 1px);
 }
 
 .grid-mask {
@@ -193,17 +423,140 @@
   -webkit-mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, #000 35%, transparent 100%);
 }
 
-/* Premium Neon Glow Highlights */
-.neon-glow-purple {
-  box-shadow: 0 0 50px 10px rgba(124, 58, 237, 0.08);
+/* Responsive grid backgrounds */
+@media (max-width: 640px) {
+  .grid-bg {
+    background-size: 40px 40px;
+  }
+  .grid-background {
+    background-size: 30px 30px;
+  }
 }
 
-.neon-glow-cyan {
-  box-shadow: 0 0 50px 10px rgba(34, 211, 238, 0.08);
+/* ─── Premium Neon Glow Highlights ─── */
+.neon-glow-sky {
+  box-shadow: 0 0 50px 10px oklch(0.62 0.24 295 / 4%);
 }
-
 .neon-glow-rose {
-  box-shadow: 0 0 50px 10px rgba(244, 63, 94, 0.08);
+  box-shadow: 0 0 50px 10px oklch(0.55 0.22 15 / 4%);
 }
 
+/* ─── Gradient Orbs (Decorative) ─── */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
 
+.orb-primary {
+  background: oklch(0.50 0.22 285 / 12%);
+}
+
+.orb-accent {
+  background: oklch(0.62 0.24 295 / 8%);
+}
+
+/* ─── Mobile Performance Optimizations ─── */
+@media (max-width: 640px) {
+  .glass, .glass-strong, .glass-panel {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: var(--card) !important;
+    box-shadow: none !important;
+    border: 1px solid var(--border) !important;
+  }
+  .orb {
+    display: none !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .glass, .glass-panel {
+    backdrop-filter: blur(12px) saturate(1.6);
+    -webkit-backdrop-filter: blur(12px) saturate(1.6);
+  }
+}
+
+/* Safe areas */
+.safe-padding-top {
+  padding-top: env(safe-area-inset-top);
+}
+.safe-padding-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ─── Responsive Utility: Prevent Horizontal Overflow ─── */
+.overflow-safe {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* ─── Premium 3-Bar Loader — matches reference animation exactly ─── */
+
+/* Bar 1 & 3: 20px base, bar 2 (middle): 35px base */
+/* At 20% of cycle → scaleY(1.5) + brand gradient glow */
+/* At 40% → back to normal. Stagger: 0s / 0.25s / 0.5s */
+
+@keyframes inboxiq-bar-pulse {
+  20% {
+    transform: scaleY(1.5);
+  }
+  40% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes inboxiq-bar-color {
+  20% {
+    background: linear-gradient(to bottom, #7c3aed, #a855f7, #6d28d9);
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.55), 0 0 20px rgba(109, 40, 217, 0.25);
+  }
+  40% {
+    background: rgba(255, 255, 255, 0.14);
+    box-shadow: none;
+  }
+}
+
+/* Base bar styles */
+.pbl-bar {
+  display: inline-block;
+  border-radius: 10px;
+  transform-origin: center bottom;
+  background: rgba(255, 255, 255, 0.14);
+  animation: inboxiq-bar-pulse 1s linear infinite,
+             inboxiq-bar-color  1s linear infinite;
+  will-change: transform, background, box-shadow;
+}
+
+/* Size variants */
+/* sm */
+.pbl-sm.pbl-bar   { width: 2px; height: 14px; }
+.pbl-sm.pbl-mid   { width: 2px; height: 22px; margin: 0 3px; }
+
+/* md (default) */
+.pbl-md.pbl-bar   { width: 3px; height: 20px; }
+.pbl-md.pbl-mid   { width: 3px; height: 35px; margin: 0 5px; }
+
+/* lg */
+.pbl-lg.pbl-bar   { width: 4px; height: 28px; }
+.pbl-lg.pbl-mid   { width: 4px; height: 48px; margin: 0 6px; }
+
+/* Stagger delays — matches reference exactly */
+.pbl-bar:nth-child(1) { animation-delay: 0s;    }
+.pbl-bar:nth-child(2) { animation-delay: 0.25s; }
+.pbl-bar:nth-child(3) { animation-delay: 0.5s;  }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .pbl-bar {
+    animation: none !important;
+    background: rgba(167, 139, 250, 0.5) !important;
+    box-shadow: none !important;
+  }
+}
+
+/* ─── Legacy classes kept for backward compat (unused) ─── */
+.premium-bar-loader-bar { display: none; }
+.premium-bar-loader-bar-overlay { display: none; }
