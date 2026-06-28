@@ -6,9 +6,9 @@ import { apiService } from '@/services/api';
 import { useUIStore } from '@/store/useStore';
 import {
   Search, Mail, ChevronLeft, ChevronRight, X,
-  Sparkles, Tag, Star, Circle,
+  Sparkles, Tag, Star, ChevronDown, Check,
 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { PageLoader } from '@/components/ui';
 
@@ -62,16 +62,52 @@ export default function InboxPage() {
   } = useUIStore();
 
   const [searchInput, setSearchInput] = useState(searchQuery);
+  const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setSearchQuery(searchInput), 400);
     return () => clearTimeout(t);
   }, [searchInput, setSearchQuery]);
 
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setAccountDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const { data: accounts } = useQuery({
     queryKey: ['connected-accounts'],
     queryFn: apiService.getConnectedAccounts,
   });
+
+  // ── Auto-select the logged-in account on first load ──────────────
+  // If no account is selected OR the stored ID is stale (not in accounts),
+  // default to the first connected account. A ref flag ensures this only
+  // fires once per mount so explicit "All Accounts" choices within the
+  // session are respected.
+  const hasAutoSelectedRef = useRef(false);
+  useEffect(() => {
+    if (!accounts || accounts.length === 0) return;
+    if (hasAutoSelectedRef.current) return;
+    hasAutoSelectedRef.current = true;
+
+    const isValidId = selectedAccountId && accounts.find(a => a.id === selectedAccountId);
+    if (!isValidId) {
+      // Default to the first (primary) connected account
+      setSelectedAccountId(accounts[0].id);
+    }
+  }, [accounts, selectedAccountId, setSelectedAccountId]);
+
+  // Resolved label shown in the dropdown trigger
+  const selectedAccountLabel = selectedAccountId
+    ? accounts?.find(a => a.id === selectedAccountId)?.providerEmail ?? 'All Accounts'
+    : 'All Accounts';
 
   const { data: emailData, isLoading, isError } = useQuery({
     queryKey: ['emails', currentPage, searchQuery, selectedLabel, selectedAccountId],
@@ -146,38 +182,117 @@ export default function InboxPage() {
               />
             </div>
 
-            {/* Account selector */}
-            <select
-              value={selectedAccountId}
-              onChange={(e) => setSelectedAccountId(e.target.value)}
-              className="px-3 py-2 rounded-xl text-[12px] font-semibold text-zinc-300 focus:outline-none cursor-pointer transition-all duration-200"
-              style={{
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(255,255,255,0.08)',
-              }}
-            >
-              <option value="">All Accounts</option>
-              {accounts?.map(acc => (
-                <option key={acc.id} value={acc.id}>{acc.providerEmail}</option>
-              ))}
-            </select>
+            {/* ── Custom Account Dropdown ── */}
+            <div ref={dropdownRef} className="relative shrink-0">
+              <button
+                onClick={() => setAccountDropdownOpen(prev => !prev)}
+                className="flex items-center gap-2 px-3 py-2 rounded-xl text-[12px] font-semibold text-zinc-200 cursor-pointer transition-all duration-200 select-none"
+                style={{
+                  background: accountDropdownOpen ? 'rgba(109,40,217,0.12)' : 'rgba(255,255,255,0.04)',
+                  border: accountDropdownOpen ? '1px solid rgba(167,139,250,0.35)' : '1px solid rgba(255,255,255,0.08)',
+                  minWidth: '150px',
+                }}
+              >
+                <span className="flex-1 text-left truncate">
+                  {selectedAccountLabel}
+                </span>
+                <ChevronDown
+                  className="w-3.5 h-3.5 text-zinc-500 shrink-0 transition-transform duration-200"
+                  style={{ transform: accountDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                />
+              </button>
+
+              {/* Dropdown panel */}
+              {accountDropdownOpen && (
+                <div
+                  className="absolute right-0 top-[calc(100%+6px)] z-50 min-w-[220px] rounded-2xl overflow-hidden shadow-2xl"
+                  style={{
+                    background: 'rgba(14,10,30,0.97)',
+                    border: '1px solid rgba(167,139,250,0.15)',
+                    boxShadow: '0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(109,40,217,0.1)',
+                    backdropFilter: 'blur(24px)',
+                  }}
+                >
+                  {/* All Accounts option */}
+                  <button
+                    onClick={() => { setSelectedAccountId(''); setAccountDropdownOpen(false); }}
+                    className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left text-[12px] font-medium transition-all duration-150 cursor-pointer group"
+                    style={{
+                      color: !selectedAccountId ? '#a78bfa' : '#a1a1aa',
+                      background: !selectedAccountId ? 'rgba(109,40,217,0.1)' : 'transparent',
+                    }}
+                    onMouseEnter={e => { if (selectedAccountId) (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.04)'; }}
+                    onMouseLeave={e => { if (selectedAccountId) (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+                  >
+                    <span>All Accounts</span>
+                    {!selectedAccountId && <Check className="w-3.5 h-3.5 text-[#a78bfa] shrink-0" />}
+                  </button>
+
+                  {/* Divider */}
+                  {accounts && accounts.length > 0 && (
+                    <div className="h-px mx-3" style={{ background: 'rgba(255,255,255,0.05)' }} />
+                  )}
+
+                  {/* Account options */}
+                  {accounts?.map(acc => (
+                    <button
+                      key={acc.id}
+                      onClick={() => { setSelectedAccountId(acc.id); setAccountDropdownOpen(false); }}
+                      className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left text-[12px] font-medium transition-all duration-150 cursor-pointer"
+                      style={{
+                        color: selectedAccountId === acc.id ? '#a78bfa' : '#a1a1aa',
+                        background: selectedAccountId === acc.id ? 'rgba(109,40,217,0.1)' : 'transparent',
+                      }}
+                      onMouseEnter={e => { if (selectedAccountId !== acc.id) (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.04)'; }}
+                      onMouseLeave={e => { if (selectedAccountId !== acc.id) (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        {/* Avatar initial */}
+                        <div className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white shrink-0"
+                          style={{ background: 'linear-gradient(135deg, #6d28d9, #a855f7)' }}
+                        >
+                          {acc.providerEmail[0].toUpperCase()}
+                        </div>
+                        <span className="truncate">{acc.providerEmail}</span>
+                      </div>
+                      {selectedAccountId === acc.id && <Check className="w-3.5 h-3.5 text-[#a78bfa] shrink-0" />}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* ── Tab pills ──────────────────────────────────────── */}
-          <div className="px-4 border-b border-white/[0.05] flex gap-0.5 overflow-x-auto no-scrollbar shrink-0 pt-1">
+          {/* ── Tab pills — Gmail style with hover ───────────────── */}
+          <div className="px-2 border-b border-white/[0.05] flex overflow-x-auto no-scrollbar shrink-0">
             {labelFilters.map(lbl => {
               const active = selectedLabel === lbl.value;
               return (
                 <button
                   key={lbl.value}
                   onClick={() => setSelectedLabel(lbl.value)}
-                  className="relative px-4 py-3 text-[12px] font-semibold shrink-0 cursor-pointer transition-all duration-200 whitespace-nowrap"
-                  style={{ color: active ? '#a78bfa' : '#71717a' }}
+                  className="relative px-4 py-3 text-[12px] font-semibold shrink-0 cursor-pointer transition-all duration-200 whitespace-nowrap rounded-t-lg"
+                  style={{
+                    color: active ? '#a78bfa' : '#71717a',
+                  }}
+                  onMouseEnter={e => {
+                    if (!active) {
+                      (e.currentTarget as HTMLButtonElement).style.color = '#d4d4d8';
+                      (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.04)';
+                    }
+                  }}
+                  onMouseLeave={e => {
+                    if (!active) {
+                      (e.currentTarget as HTMLButtonElement).style.color = '#71717a';
+                      (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+                    }
+                  }}
                 >
                   {lbl.label}
+                  {/* Active underline */}
                   {active && (
                     <span
-                      className="absolute bottom-0 left-0 right-0 h-[2px] rounded-t-full"
+                      className="absolute bottom-0 left-2 right-2 h-[2px] rounded-t-full"
                       style={{ background: 'linear-gradient(90deg, #7c3aed, #a855f7)' }}
                     />
                   )}

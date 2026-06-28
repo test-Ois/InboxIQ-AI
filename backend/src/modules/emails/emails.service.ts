@@ -143,13 +143,16 @@ export class EmailsService {
       ];
     }
 
-    // Optional connected account filter
+    // Note: emails are stored by userId only — there is no connectedAccountId FK
+    // on the email table. When accountId is provided we validate it exists but
+    // do not add an extra filter (all emails already belong to the authenticated user).
     if (filters.accountId) {
       const account = await this.prisma.connectedAccount.findUnique({
         where: { id: filters.accountId },
       });
-      if (account) {
-        whereClause.sender = { contains: account.providerEmail, mode: 'insensitive' };
+      // account must belong to this user
+      if (!account || account.userId !== userId) {
+        throw new BadRequestException('Connected account not found or not owned by user');
       }
     }
 
